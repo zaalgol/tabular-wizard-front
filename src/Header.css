@@ -1,0 +1,13 @@
+/* src/Header.css */
+.app-bar {
+    flex-grow: 1;
+  }
+  
+  .menu-button {
+    margin-right: 2em;
+  }
+  
+  .title {
+    flex-grow: 1;
+  }
+  
