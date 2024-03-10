@@ -16,18 +16,15 @@ function Login() {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:8080/api/login/', { username, password }, { withCredentials: true });
-    
-      // const history = useHistory();
+  
       if (response.status === 200) {
-        setIsAuthenticated(true); // Update authentication state
-        console.log(`token: ${JSON.stringify(response)}`)
+        setIsAuthenticated(true);
         localStorage.setItem('access_token', response.data.access_token);
         window.location.replace('/');
           
       }
     } catch (error) {
       console.error("Login failed:", error);
-      // Handle login error (e.g., display an error message)
       setIsAuthenticated(false);
     }
   };

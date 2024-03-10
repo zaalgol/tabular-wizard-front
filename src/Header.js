@@ -1,4 +1,3 @@
-// src/Header.js
 import React, { useContext } from 'react';
 import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -8,7 +7,6 @@ import './Header.css'; // Import the CSS file here
 
 const Header = () => {
   const { isAuthenticated } = useContext(AuthContext);
-//   console.log("*".repeat(100) + ``)
   const logout = useLogout();
 
   return (
@@ -24,7 +22,7 @@ const Header = () => {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" component="div" className="title">
-          Your App Name
+          React Login Demo
         </Typography>
         {isAuthenticated && (
           <Button color="inherit" onClick={logout}>
