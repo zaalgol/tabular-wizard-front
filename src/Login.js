@@ -1,9 +1,8 @@
 import React, { useState, useContext } from 'react';
-import axios from 'axios';
 import { AuthContext } from './AuthContext';
 import { TextField, Button, Container, Box, Typography, CssBaseline } from '@mui/material';
 import './Login.css'; // Import the CSS file here
-
+import makeRequest from './api'
 
 // axios.defaults.withCredentials = true;
 
@@ -15,7 +14,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8080/api/login/', { username, password }, { withCredentials: true });
+      const response = await makeRequest('/api/login/', 'POST', { username, password }, {}, false)
   
       if (response.status === 200) {
         setIsAuthenticated(true);

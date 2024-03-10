@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import makeRequest from './api'
 
 function MainPage() {
   const [content, setContent] = useState("");
@@ -12,12 +12,7 @@ function MainPage() {
     const fetchContent = async () => {
       if (token) {
         try {
-          const response = await axios.get("http://localhost:8080/", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true,
-          });
+          const response = await makeRequest('/', 'GET', null, {}, true)
           setContent(response.data);
         } catch (error) {
           // If the token is invalid, navigate to login
