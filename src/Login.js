@@ -1,14 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
+import { AuthContext } from './AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-function Login({ setToken }) {
+function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+  const navigate = useNavigate(); // useNavigate hook for redirecting
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/'); // Redirect to the main page if authenticated
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = await loginUser({ username, password });
-    setToken(token);
+    try {
+      const response = await axios.post(
+        'http://localhost:8080/api/login/',
+        { username, password },
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        setIsAuthenticated(true); // Update authentication state
+        localStorage.setItem('access_token', response.data.access_token);
+        navigate('/'); // Redirect to the main page
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      setIsAuthenticated(false);
+    }
   };
 
   return (
@@ -37,12 +61,6 @@ function Login({ setToken }) {
       </form>
     </div>
   );
-}
-
-async function loginUser(credentials) {
-  // Replace with your API endpoint
-  const { data } = await axios.post('/api/login', credentials);
-  return data.token;
 }
 
 export default Login;
