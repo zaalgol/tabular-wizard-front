@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import makeRequest from './api'
+import makeRequest from '../api'
 
 function MainPage() {
   const [content, setContent] = useState("");

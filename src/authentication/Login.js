@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { AuthContext } from './AuthContext';
 import { TextField, Button, Container, Box, Typography, CssBaseline } from '@mui/material';
 import './Login.css'; // Import the CSS file here
-import makeRequest from './api'
+import makeRequest from '../api'
 
 // axios.defaults.withCredentials = true;
 

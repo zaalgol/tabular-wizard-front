@@ -4,7 +4,7 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import Login from "./Login";
+import Login from "../authentication/Login";
 import MainPage from "./MainPage";
 
 function Routers() {
