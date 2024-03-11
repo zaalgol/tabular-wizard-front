@@ -7,14 +7,14 @@ import makeRequest from '../api'
 // axios.defaults.withCredentials = true;
 
 function Login() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { setIsAuthenticated } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await makeRequest('/api/login/', 'POST', { username, password }, {}, false)
+      const response = await makeRequest('/api/login/', 'POST', { email, password }, {}, false)
   
       if (response.status === 200) {
         setIsAuthenticated(true);
@@ -40,13 +40,13 @@ function Login() {
             margin="normal"
             required
             fullWidth
-            id="username"
-            label="Username"
-            name="username"
-            autoComplete="username"
+            id="email"
+            label="Email"
+            name="email"
+            autoComplete="email"
             autoFocus
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             margin="normal"
