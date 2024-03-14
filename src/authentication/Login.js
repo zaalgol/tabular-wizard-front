@@ -14,8 +14,8 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await makeRequest('/api/login/', 'POST', { email, password }, {}, false)
-  
+      const response = await makeRequest('/api/login/', 'POST', { email, password }, {}, false, false)
+      
       if (response.status === 200) {
         setIsAuthenticated(true);
         localStorage.setItem('access_token', response.data.access_token);

@@ -9,10 +9,9 @@ import appConfig from './config/config.json';
  * @param {Object} [body] The request body, for methods that use it (like POST or PUT).
  * @param {Object} [headers] Optional headers to include in the request.
  * @param {boolean} [useToken=true] Whether to include an Authorization token.
- * @param {boolean} [withCredentials=true] Whether to include credentials in the request.
  * @returns {Promise} Axios response.
  */
-const makeRequest = async (url, method, body = null, headers = {}, useToken = true, withCredentials = true) => {
+const makeRequest = async (url, method, body = null, headers = {}, useToken = true) => {
   try {
     // Add Authorization token to headers if useToken is true
     if (useToken) {
@@ -25,7 +24,6 @@ const makeRequest = async (url, method, body = null, headers = {}, useToken = tr
       method,
       url,
       headers,
-      withCredentials,
       ...(body && { data: body }), // Conditionally add body if it exists
     };
 
