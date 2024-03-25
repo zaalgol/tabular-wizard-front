@@ -1,0 +1,19 @@
+/* FileUpload.css */
+.grid-container {
+    max-height: 400px; /* Adjust as needed */
+    max-width: 100%;
+    overflow: auto;
+    border: 1px solid #ccc; /* Optional for better visibility of the grid */
+  }
+  
+  table {
+    width: 100%; /* Ensures table takes full width */
+    border-collapse: collapse; /* Optional for styling */
+  }
+  
+  th, td {
+    padding: 8px; /* Optional for spacing */
+    text-align: left; /* Optional for text alignment */
+    border: 1px solid #ccc; /* Optional for cell borders */
+  }
+  

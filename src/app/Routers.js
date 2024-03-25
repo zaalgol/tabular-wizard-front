@@ -6,12 +6,14 @@ import {
 
 import Login from "../authentication/Login";
 import MainPage from "./MainPage";
+import FileUpload from "../ai/FileUpload3"
 
 function Routers() {
   return (
     <Routes>
       <Route path="login" element={<Login />} />
       <Route path="/" element={<MainPage />} />
+      <Route path="/trainModel" element={<FileUpload />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
