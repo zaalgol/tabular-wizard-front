@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
-    Container, Grid, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button, Select, MenuItem,
+    Container, Grid, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TextField, Select, MenuItem,
     FormControl, Radio, RadioGroup, InputLabel, FormControlLabel, Typography, TablePagination
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import makeRequest from '../api'
 
 const ROWS_PER_PAGE = 10; // Set the number of rows per page
 const INITIAL_PAGE = 1;
@@ -12,7 +13,7 @@ const INITIAL_PAGE = 1;
 
 
 function FileUpload3() {
-    ;
+    const [modelName, setModelName] = useState('');
     const [data, setData] = useState([]);
     const [columns, setColumns] = useState([]);
     const [targetColumn, setTargetColumn] = useState('');
@@ -23,6 +24,10 @@ function FileUpload3() {
     const [rowsPerPage, setRowsPerPage] = useState(ROWS_PER_PAGE);
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleModelNameChange = (event) => {
+        setModelName(event.target.value);
+    };
 
     const handleFileChange = (e) => {
         const files = e.target.files;
@@ -59,6 +64,16 @@ function FileUpload3() {
             [colIndex]: event.target.value
         });
     };
+    
+    useEffect(() => {
+        const initialOptions = columns.reduce((options, _, colIndex) => {
+          options[colIndex] = 'raw'; // Set default to 'raw' for each column
+          return options;
+        }, {});
+    
+        setColumnOptions(initialOptions);
+      }, [columns]); 
+    
 
     const handleChangePage = (event, newPage) => {
         setCurrentPage(newPage + 1);
@@ -84,7 +99,30 @@ function FileUpload3() {
 
     const handleSubmit = async () => {
         setIsSubmitting(true);
-        // perform the submission work here
+        try {
+            // Extract headers and rows from the data
+            const [headers, ...rows] = data;
+    
+            // Filter columns based on the 'Use column data' option
+            const filteredColumnsIndexes = headers.map((_, index) => index).filter(index => columnOptions[index] === 'raw');
+            const filteredHeaders = headers.filter((_, index) => filteredColumnsIndexes.includes(index));
+            const filteredRows = rows.map(row => row.filter((_, index) => filteredColumnsIndexes.includes(index)));
+    
+            // Prepare the payload
+            const payload = {
+                modelName,
+                dataset: [filteredHeaders, ...filteredRows],
+                targetColumn,
+                modelType,
+                trainingSpeed
+            };
+    
+            // Send the data to the server
+            const response = await makeRequest('/api/trainModel/', 'POST', payload, {}, true); // Adjust the endpoint as necessary
+            console.log(response.data); // Handle the response as needed
+        } catch (error) {
+            console.error('Error submitting the data:', error);
+        }
         setIsSubmitting(false);
     };
 
@@ -97,7 +135,7 @@ function FileUpload3() {
                     sx={{ width: 200 }} // Adjust the width as needed
                     labelId={`select-label-${colIndex}`}
                     id={`select-${colIndex}`}
-                    value={columnOptions[colIndex] || ''}
+                    value={columnOptions[colIndex] || 'raw'}
                     label="Options"
                     onChange={(event) => handleOptionChange(colIndex, event)}
                 >
@@ -133,6 +171,14 @@ function FileUpload3() {
                             onChange={handleFileChange}
                         />
                     </LoadingButton>
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        required
+                        id="outlined-required"
+                        label="Model Name"
+                        onChange={handleModelNameChange}
+                        />
                 </Grid>
 
                 <Grid item xs={12}>
