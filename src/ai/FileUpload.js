@@ -12,7 +12,7 @@ const INITIAL_PAGE = 1;
 
 
 
-function FileUpload3() {
+function FileUpload() {
     const [modelName, setModelName] = useState('');
     const [data, setData] = useState([]);
     const [columns, setColumns] = useState([]);
@@ -64,16 +64,16 @@ function FileUpload3() {
             [colIndex]: event.target.value
         });
     };
-    
+
     useEffect(() => {
         const initialOptions = columns.reduce((options, _, colIndex) => {
-          options[colIndex] = 'raw'; // Set default to 'raw' for each column
-          return options;
+            options[colIndex] = 'raw'; // Set default to 'raw' for each column
+            return options;
         }, {});
-    
+
         setColumnOptions(initialOptions);
-      }, [columns]); 
-    
+    }, [columns]);
+
 
     const handleChangePage = (event, newPage) => {
         setCurrentPage(newPage + 1);
@@ -102,12 +102,12 @@ function FileUpload3() {
         try {
             // Extract headers and rows from the data
             const [headers, ...rows] = data;
-    
+
             // Filter columns based on the 'Use column data' option
             const filteredColumnsIndexes = headers.map((_, index) => index).filter(index => columnOptions[index] === 'raw');
             const filteredHeaders = headers.filter((_, index) => filteredColumnsIndexes.includes(index));
             const filteredRows = rows.map(row => row.filter((_, index) => filteredColumnsIndexes.includes(index)));
-    
+
             // Prepare the payload
             const payload = {
                 modelName,
@@ -116,7 +116,7 @@ function FileUpload3() {
                 modelType,
                 trainingSpeed
             };
-    
+
             // Send the data to the server
             const response = await makeRequest('/api/trainModel/', 'POST', payload, {}, true); // Adjust the endpoint as necessary
             console.log(response.data); // Handle the response as needed
@@ -158,6 +158,14 @@ function FileUpload3() {
 
             <Grid container spacing={3}>
                 <Grid item xs={12}>
+                    <TextField
+                        required
+                        id="outlined-required"
+                        label="Model Name"
+                        onChange={handleModelNameChange}
+                    />
+                </Grid>
+                <Grid item xs={12}>
                     <LoadingButton
                         variant="contained"
                         component="label"
@@ -172,15 +180,6 @@ function FileUpload3() {
                         />
                     </LoadingButton>
                 </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        required
-                        id="outlined-required"
-                        label="Model Name"
-                        onChange={handleModelNameChange}
-                        />
-                </Grid>
-
                 <Grid item xs={12}>
                     <TableContainer component={Paper} sx={{ maxHeight: 440, overflow: 'auto' }}>
                         <Table stickyHeader aria-label="sticky table">
@@ -207,7 +206,7 @@ function FileUpload3() {
                                     ))}
                             </TableBody>
                         </Table>
-                        <TablePagination
+                        {data.length > 0 && <TablePagination
                             rowsPerPageOptions={[5, 10, 25]}
                             component="div"
                             count={data.length}
@@ -215,7 +214,7 @@ function FileUpload3() {
                             page={currentPage - 1} // Subtract 1 for zero-indexed page prop
                             onPageChange={handleChangePage}
                             onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
+                        />}
                     </TableContainer>
                 </Grid>
                 <Grid item xs={12}>
@@ -277,4 +276,4 @@ function FileUpload3() {
     );
 }
 
-export default FileUpload3;
+export default FileUpload;

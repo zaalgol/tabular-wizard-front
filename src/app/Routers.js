@@ -6,7 +6,7 @@ import {
 
 import Login from "../authentication/Login";
 import MainPage from "./MainPage";
-import FileUpload from "../ai/FileUpload3"
+import FileUpload from "../ai/FileUpload"
 
 function Routers() {
   return (
