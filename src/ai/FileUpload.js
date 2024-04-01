@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
     Container, Grid, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TextField, Select, MenuItem,
-    FormControl, Radio, RadioGroup, InputLabel, FormControlLabel, Typography, TablePagination
+    FormControl, Radio, RadioGroup, InputLabel, FormControlLabel, Typography, TablePagination, Box
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import makeRequest from '../api'
@@ -14,6 +14,7 @@ const INITIAL_PAGE = 1;
 
 function FileUpload() {
     const [modelName, setModelName] = useState('');
+    const [description, setDescription] = useState('');
     const [data, setData] = useState([]);
     const [columns, setColumns] = useState([]);
     const [targetColumn, setTargetColumn] = useState('');
@@ -27,6 +28,10 @@ function FileUpload() {
 
     const handleModelNameChange = (event) => {
         setModelName(event.target.value);
+    };
+
+    const handleDescriptionChange = (event) => {
+        setDescription(event.target.value);
     };
 
     const handleFileChange = (e) => {
@@ -111,6 +116,7 @@ function FileUpload() {
             // Prepare the payload
             const payload = {
                 modelName,
+                description,
                 dataset: [filteredHeaders, ...filteredRows],
                 targetColumn,
                 modelType,
@@ -150,129 +156,146 @@ function FileUpload() {
         );
     };
 
+    // Add custom styling here
+    const containerStyles = {
+        marginTop: '16px', // Adjust the top margin
+        marginRight: '16px', // Adjust the right margin
+    };
+
+    const gridItemStyles = {
+        padding: '8px', // Provides spacing inside each grid item
+    };
+
     return (
-        <Container maxWidth="lg">
-            <Typography variant="h4" gutterBottom>
-                Train Model
-            </Typography>
-
-            <Grid container spacing={3}>
-                <Grid item xs={12}>
-                    <TextField
-                        required
-                        id="outlined-required"
-                        label="Model Name"
-                        onChange={handleModelNameChange}
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <LoadingButton
-                        variant="contained"
-                        component="label"
-                        loading={isLoading}
-                    >
-                        Upload File
-                        <input
-                            type="file"
-                            hidden
-                            accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                            onChange={handleFileChange}
-                        />
-                    </LoadingButton>
-                </Grid>
-                <Grid item xs={12}>
-                    <TableContainer component={Paper} sx={{ maxHeight: 440, overflow: 'auto' }}>
-                        <Table stickyHeader aria-label="sticky table">
-                            <TableHead>
-                                <TableRow>
-                                    {columns.map((col, index) => (
-                                        <TableCell key={index}>
-                                            <Typography variant="h6">{col}</Typography>
-                                            {renderColumnOptions(index)}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {data
-                                    .slice(1)
-                                    .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
-                                    .map((row, rowIndex) => (
-                                        <TableRow key={rowIndex}>
-                                            {row.map((cell, cellIndex) => (
-                                                <TableCell key={cellIndex}>{cell}</TableCell>
-                                            ))}
-                                        </TableRow>
-                                    ))}
-                            </TableBody>
-                        </Table>
-                        {data.length > 0 && <TablePagination
-                            rowsPerPageOptions={[5, 10, 25]}
-                            component="div"
-                            count={data.length}
-                            rowsPerPage={rowsPerPage}
-                            page={currentPage - 1} // Subtract 1 for zero-indexed page prop
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                        />}
-                    </TableContainer>
-                </Grid>
-                <Grid item xs={12}>
-                    <FormControl fullWidth>
-                        <InputLabel id="target-column-label">Target Column</InputLabel>
-                        <Select
-                            labelId="target-column-label"
-                            id="target-column-select"
-                            value={targetColumn}
-                            label="Target Column"
-                            onChange={handleTargetColumnChange}
+        <Box sx={{ p: 4 }}> {/* Use Box to provide padding around the entire component */}
+            <Container maxWidth={false} sx={containerStyles}>
+                <Typography variant="h4" gutterBottom>
+                    Train Model
+                </Typography>
+                <Grid container spacing={3}>
+                    <Grid item xs={2} sx={gridItemStyles}>
+                        <TextField
+                            required
+                            fullWidth
+                            id="outlined-required"
+                            label="Model Name"
+                            onChange={handleModelNameChange} />
+                    </Grid>
+                    <Grid item xs={4} sx={gridItemStyles}>
+                        <TextField
+                            required
+                            fullWidth
+                            id="outlined-required"
+                            label="Description"
+                            onChange={handleDescriptionChange} />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <LoadingButton
+                            variant="contained"
+                            component="label"
+                            loading={isLoading}
                         >
-                            {columns.map((col, index) => (
-                                <MenuItem key={index} value={col}>{col}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
+                            Upload File
+                            <input
+                                type="file"
+                                hidden
+                                accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                onChange={handleFileChange} />
+                        </LoadingButton>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TableContainer component={Paper} sx={{ maxHeight: 400, overflow: 'auto' }}>
+                            <Table stickyHeader aria-label="sticky table">
+                                <TableHead>
+                                    <TableRow>
+                                        {columns.map((col, index) => (
+                                            <TableCell key={index}>
+                                                <Typography variant="h6">{col}</Typography>
+                                                {renderColumnOptions(index)}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {data
+                                        .slice(1)
+                                        .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+                                        .map((row, rowIndex) => (
+                                            <TableRow key={rowIndex}>
+                                                {row.map((cell, cellIndex) => (
+                                                    <TableCell key={cellIndex}>{cell}</TableCell>
+                                                ))}
+                                            </TableRow>
+                                        ))}
+                                </TableBody>
+                            </Table>
+                            {data.length > 0 && <TablePagination
+                                rowsPerPageOptions={[5, 10, 25]}
+                                component="div"
+                                count={data.length}
+                                rowsPerPage={rowsPerPage}
+                                page={currentPage - 1} // Subtract 1 for zero-indexed page prop
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage} />}
+                        </TableContainer>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <FormControl fullWidth>
+                            <InputLabel id="target-column-label">Target Column</InputLabel>
+                            <Select
+                                labelId="target-column-label"
+                                id="target-column-select"
+                                value={targetColumn}
+                                label="Target Column"
+                                onChange={handleTargetColumnChange}
+                            >
+                                {columns.map((col, index) => (
+                                    <MenuItem key={index} value={col}>{col}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
 
-                <Grid item xs={12}>
-                    <Grid container spacing={8} alignItems="center">
-                        <Grid item>
-                            <Typography variant="h6" gutterBottom>
-                                Model Type
-                            </Typography>
-                            <FormControl component="fieldset">
-                                <RadioGroup row aria-label="model-type" name="modelType" value={modelType} onChange={handleModelTypeChange}>
-                                    <FormControlLabel value="regression" control={<Radio />} label="Regression" />
-                                    <FormControlLabel value="classification" control={<Radio />} label="Classification" />
-                                </RadioGroup>
-                            </FormControl>
-                        </Grid>
-                        <Grid item>
-                            <Typography variant="h6" gutterBottom>
-                                Training Speed
-                            </Typography>
-                            <FormControl component="fieldset">
-                                <RadioGroup row aria-label="training-speed" name="trainingSpeed" value={trainingSpeed} onChange={handleTrainingSpeedChange}>
-                                    <FormControlLabel value="fast" control={<Radio />} label="Fast Training" />
-                                    <FormControlLabel value="slow" control={<Radio />} label="Slow Training But More Accurate" />
-                                </RadioGroup>
-                            </FormControl>
+                    <Grid item xs={12}>
+                        <Grid container spacing={8} alignItems="center">
+                            <Grid item>
+                                <Typography variant="h6" gutterBottom>
+                                    Model Type
+                                </Typography>
+                                <FormControl component="fieldset">
+                                    <RadioGroup row aria-label="model-type" name="modelType" value={modelType} onChange={handleModelTypeChange}>
+                                        <FormControlLabel value="regression" control={<Radio />} label="Regression" />
+                                        <FormControlLabel value="classification" control={<Radio />} label="Classification" />
+                                    </RadioGroup>
+                                </FormControl>
+                            </Grid>
+                            <Grid item>
+                                <Typography variant="h6" gutterBottom>
+                                    Training Speed
+                                </Typography>
+                                <FormControl component="fieldset">
+                                    <RadioGroup row aria-label="training-speed" name="trainingSpeed" value={trainingSpeed} onChange={handleTrainingSpeedChange}>
+                                        <FormControlLabel value="fast" control={<Radio />} label="Fast Training" />
+                                        <FormControlLabel value="slow" control={<Radio />} label="Slow Training But More Accurate" />
+                                    </RadioGroup>
+                                </FormControl>
+                            </Grid>
                         </Grid>
                     </Grid>
-                </Grid>
 
-                <Grid item xs={12}>
-                    <LoadingButton
-                        variant="contained"
-                        color="primary"
-                        onClick={handleSubmit}
-                        loading={isSubmitting}
-                    >
-                        Submit
-                    </LoadingButton>
+                    <Grid item xs={12}>
+                        <LoadingButton
+                            variant="contained"
+                            color="primary"
+                            onClick={handleSubmit}
+                            loading={isSubmitting}
+                        >
+                            Submit
+                        </LoadingButton>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </Container>
+            </Container>
+        </Box>
     );
 }
 
