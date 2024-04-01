@@ -13,49 +13,51 @@ const INITIAL_PAGE = 1;
 
 
 function FileUpload() {
-    const [modelName, setModelName] = useState('');
-    const [description, setDescription] = useState('');
-    const [data, setData] = useState([]);
-    const [columns, setColumns] = useState([]);
-    const [targetColumn, setTargetColumn] = useState('');
-    const [modelType, setModelType] = useState('');
-    const [trainingSpeed, setTrainingSpeed] = useState('fast');
-    const [columnOptions, setColumnOptions] = useState({});
-    const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(ROWS_PER_PAGE);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [state, setState] = useState({
+        modelName: '',
+        description: '',
+        data: [],
+        columns: [],
+        targetColumn: '',
+        modelType: '',
+        trainingSpeed: 'fast',
+        columnOptions: {},
+        currentPage: 1,
+        rowsPerPage: ROWS_PER_PAGE,
+        isLoading: false,
+        isSubmitting: false,
+    });
 
-    const handleModelNameChange = (event) => {
-        setModelName(event.target.value);
-    };
-
-    const handleDescriptionChange = (event) => {
-        setDescription(event.target.value);
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setState(prev => ({ ...prev, [name]: value }));
+        var v = 0;
     };
 
     const handleFileChange = (e) => {
         const files = e.target.files;
         if (files && files[0]) {
-            setIsLoading(true); // Assume you have this state defined for loading
+            setState(prev => ({ ...prev, isLoading: true }));
             const file = files[0];
             const reader = new FileReader();
             reader.onload = (evt) => {
-                console.log('onload');
                 const bstr = evt.target.result;
                 const wb = XLSX.read(bstr, { type: 'binary' });
                 const wsname = wb.SheetNames[0];
                 const ws = wb.Sheets[wsname];
                 const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
                 if (jsonData.length > 0) {
-                    setColumns(jsonData[0]); // Set column headers
-                    setData(jsonData);
+                    setState(prev => ({
+                        ...prev,
+                        columns: jsonData[0],
+                        data: jsonData,
+                        isLoading: false,
+                    }));
                 }
-                setIsLoading(false);
             };
             reader.onerror = (error) => {
                 console.error('Error reading file:', error);
-                setIsLoading(false);
+                setState(prev => ({ ...prev, isLoading: false }));
             };
             reader.readAsBinaryString(file);
         } else {
@@ -64,72 +66,64 @@ function FileUpload() {
     };
 
     const handleOptionChange = (colIndex, event) => {
-        setColumnOptions({
-            ...columnOptions,
-            [colIndex]: event.target.value
-        });
+        setState(prev => ({
+            ...prev,
+            columnOptions: {
+                ...prev.columnOptions,
+                [colIndex]: event.target.value,
+            },
+        }));
     };
 
     useEffect(() => {
-        const initialOptions = columns.reduce((options, _, colIndex) => {
-            options[colIndex] = 'raw'; // Set default to 'raw' for each column
-            return options;
-        }, {});
-
-        setColumnOptions(initialOptions);
-    }, [columns]);
+        const initialOptions = state.columns.reduce((options, _, colIndex) => ({
+            ...options,
+            [colIndex]: 'raw',
+        }), {});
+        setState(prev => ({ ...prev, columnOptions: initialOptions }));
+    }, [state.columns]);
 
 
     const handleChangePage = (event, newPage) => {
-        setCurrentPage(newPage + 1);
+        setState(prev => ({ ...prev, currentPage: newPage + 1 }));
     };
 
     const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, ROWS_PER_PAGE));
-        setCurrentPage(INITIAL_PAGE);
-    };
-
-
-    const handleTargetColumnChange = (event) => {
-        setTargetColumn(event.target.value);
-    };
-
-    const handleModelTypeChange = (event) => {
-        setModelType(event.target.value);
-    };
-
-    const handleTrainingSpeedChange = (event) => {
-        setTrainingSpeed(event.target.value);
+        setState(prev => ({
+            ...prev,
+            rowsPerPage: parseInt(event.target.value, 10),
+            currentPage: INITIAL_PAGE,
+        }));
     };
 
     const handleSubmit = async () => {
-        setIsSubmitting(true);
+        setState(prev => ({ ...prev, isSubmitting: true }));
         try {
             // Extract headers and rows from the data
-            const [headers, ...rows] = data;
-
+            const [headers, ...rows] = state.data; // Access data using state.data
+    
             // Filter columns based on the 'Use column data' option
-            const filteredColumnsIndexes = headers.map((_, index) => index).filter(index => columnOptions[index] === 'raw');
+            const filteredColumnsIndexes = headers.map((_, index) => index).filter(index => state.columnOptions[index] === 'raw'); // Use state.columnOptions
             const filteredHeaders = headers.filter((_, index) => filteredColumnsIndexes.includes(index));
             const filteredRows = rows.map(row => row.filter((_, index) => filteredColumnsIndexes.includes(index)));
-
+    
             // Prepare the payload
             const payload = {
-                modelName,
-                description,
+                modelName: state.modelName, // Access using state.modelName
+                description: state.description, // Use state.description
                 dataset: [filteredHeaders, ...filteredRows],
-                targetColumn,
-                modelType,
-                trainingSpeed
+                targetColumn: state.targetColumn, // Use state.targetColumn
+                modelType: state.modelType, // Use state.modelType
+                trainingSpeed: state.trainingSpeed, // Use state.trainingSpeed
             };
-
+    
             // Send the data to the server
             const response = await makeRequest('/api/trainModel/', 'POST', payload, {}, true); // Adjust the endpoint as necessary
             console.log(response.data); // Handle the response as needed
         } catch (error) {
             console.error('Error submitting the data:', error);
         }
-        setIsSubmitting(false);
+        setState(prev => ({ ...prev, isSubmitting: false }));
     };
 
 
@@ -141,7 +135,7 @@ function FileUpload() {
                     sx={{ width: 200 }} // Adjust the width as needed
                     labelId={`select-label-${colIndex}`}
                     id={`select-${colIndex}`}
-                    value={columnOptions[colIndex] || 'raw'}
+                    value={state.columnOptions[colIndex] || 'raw'}
                     label="Options"
                     onChange={(event) => handleOptionChange(colIndex, event)}
                 >
@@ -177,23 +171,25 @@ function FileUpload() {
                         <TextField
                             required
                             fullWidth
+                            name="modelName"
                             id="outlined-required"
                             label="Model Name"
-                            onChange={handleModelNameChange} />
+                            onChange={handleInputChange} />
                     </Grid>
                     <Grid item xs={4} sx={gridItemStyles}>
                         <TextField
                             required
                             fullWidth
+                            name="description"
                             id="outlined-required"
                             label="Description"
-                            onChange={handleDescriptionChange} />
+                            onChange={handleInputChange} />
                     </Grid>
                     <Grid item xs={12}>
                         <LoadingButton
                             variant="contained"
                             component="label"
-                            loading={isLoading}
+                            loading={state.isLoading}
                         >
                             Upload File
                             <input
@@ -208,7 +204,7 @@ function FileUpload() {
                             <Table stickyHeader aria-label="sticky table">
                                 <TableHead>
                                     <TableRow>
-                                        {columns.map((col, index) => (
+                                        {state.columns.map((col, index) => (
                                             <TableCell key={index}>
                                                 <Typography variant="h6">{col}</Typography>
                                                 {renderColumnOptions(index)}
@@ -217,9 +213,9 @@ function FileUpload() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {data
+                                    {state.data
                                         .slice(1)
-                                        .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+                                        .slice((state.currentPage - 1) * state.rowsPerPage, state.currentPage * state.rowsPerPage)
                                         .map((row, rowIndex) => (
                                             <TableRow key={rowIndex}>
                                                 {row.map((cell, cellIndex) => (
@@ -229,12 +225,12 @@ function FileUpload() {
                                         ))}
                                 </TableBody>
                             </Table>
-                            {data.length > 0 && <TablePagination
+                            {state.data.length > 0 && <TablePagination
                                 rowsPerPageOptions={[5, 10, 25]}
                                 component="div"
-                                count={data.length}
-                                rowsPerPage={rowsPerPage}
-                                page={currentPage - 1} // Subtract 1 for zero-indexed page prop
+                                count={state.data.length}
+                                rowsPerPage={state.rowsPerPage}
+                                page={state.currentPage - 1} // Subtract 1 for zero-indexed page prop
                                 onPageChange={handleChangePage}
                                 onRowsPerPageChange={handleChangeRowsPerPage} />}
                         </TableContainer>
@@ -243,13 +239,14 @@ function FileUpload() {
                         <FormControl fullWidth>
                             <InputLabel id="target-column-label">Target Column</InputLabel>
                             <Select
+                                name="targetColumn"
                                 labelId="target-column-label"
                                 id="target-column-select"
-                                value={targetColumn}
+                                value={state.targetColumn}
                                 label="Target Column"
-                                onChange={handleTargetColumnChange}
+                                onChange={handleInputChange}
                             >
-                                {columns.map((col, index) => (
+                                {state.columns.map((col, index) => (
                                     <MenuItem key={index} value={col}>{col}</MenuItem>
                                 ))}
                             </Select>
@@ -263,7 +260,7 @@ function FileUpload() {
                                     Model Type
                                 </Typography>
                                 <FormControl component="fieldset">
-                                    <RadioGroup row aria-label="model-type" name="modelType" value={modelType} onChange={handleModelTypeChange}>
+                                    <RadioGroup row aria-label="model-type" name="modelType" value={state.modelType} onChange={handleInputChange}>
                                         <FormControlLabel value="regression" control={<Radio />} label="Regression" />
                                         <FormControlLabel value="classification" control={<Radio />} label="Classification" />
                                     </RadioGroup>
@@ -274,7 +271,7 @@ function FileUpload() {
                                     Training Speed
                                 </Typography>
                                 <FormControl component="fieldset">
-                                    <RadioGroup row aria-label="training-speed" name="trainingSpeed" value={trainingSpeed} onChange={handleTrainingSpeedChange}>
+                                    <RadioGroup row aria-label="training-speed" name="trainingSpeed" value={state.trainingSpeed} onChange={handleInputChange}>
                                         <FormControlLabel value="fast" control={<Radio />} label="Fast Training" />
                                         <FormControlLabel value="slow" control={<Radio />} label="Slow Training But More Accurate" />
                                     </RadioGroup>
@@ -288,7 +285,7 @@ function FileUpload() {
                             variant="contained"
                             color="primary"
                             onClick={handleSubmit}
-                            loading={isSubmitting}
+                            loading={state.isSubmitting}
                         >
                             Submit
                         </LoadingButton>
