@@ -7,6 +7,8 @@ import {
 import { LoadingButton } from '@mui/lab';
 import makeRequest from '../api'
 
+import { ModelNameInput, DescriptionInput, TargetColumnSelect, ModelTypeRadioGroup, TrainingSpeedRadioGroup } from './ModelFormComponents'; // Adjust the path as necessary
+
 const ROWS_PER_PAGE = 10; // Set the number of rows per page
 const INITIAL_PAGE = 1;
 
@@ -31,7 +33,6 @@ function FileUpload() {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setState(prev => ({ ...prev, [name]: value }));
-        var v = 0;
     };
 
     const handleFileChange = (e) => {
@@ -101,12 +102,12 @@ function FileUpload() {
         try {
             // Extract headers and rows from the data
             const [headers, ...rows] = state.data; // Access data using state.data
-    
+
             // Filter columns based on the 'Use column data' option
             const filteredColumnsIndexes = headers.map((_, index) => index).filter(index => state.columnOptions[index] === 'raw'); // Use state.columnOptions
             const filteredHeaders = headers.filter((_, index) => filteredColumnsIndexes.includes(index));
             const filteredRows = rows.map(row => row.filter((_, index) => filteredColumnsIndexes.includes(index)));
-    
+
             // Prepare the payload
             const payload = {
                 modelName: state.modelName, // Access using state.modelName
@@ -116,7 +117,7 @@ function FileUpload() {
                 modelType: state.modelType, // Use state.modelType
                 trainingSpeed: state.trainingSpeed, // Use state.trainingSpeed
             };
-    
+
             // Send the data to the server
             const response = await makeRequest('/api/trainModel/', 'POST', payload, {}, true); // Adjust the endpoint as necessary
             console.log(response.data); // Handle the response as needed
@@ -168,22 +169,16 @@ function FileUpload() {
                 </Typography>
                 <Grid container spacing={3}>
                     <Grid item xs={2} sx={gridItemStyles}>
-                        <TextField
-                            required
-                            fullWidth
-                            name="modelName"
-                            id="outlined-required"
-                            label="Model Name"
-                            onChange={handleInputChange} />
+                        <ModelNameInput
+                            value={state.modelName}
+                            onChange={handleInputChange}
+                        />
                     </Grid>
                     <Grid item xs={4} sx={gridItemStyles}>
-                        <TextField
-                            required
-                            fullWidth
-                            name="description"
-                            id="outlined-required"
-                            label="Description"
-                            onChange={handleInputChange} />
+                        <DescriptionInput
+                            value={state.description}
+                            onChange={handleInputChange}
+                        />
                     </Grid>
                     <Grid item xs={12}>
                         <LoadingButton
@@ -235,47 +230,27 @@ function FileUpload() {
                                 onRowsPerPageChange={handleChangeRowsPerPage} />}
                         </TableContainer>
                     </Grid>
-                    <Grid item xs={2}>
-                        <FormControl fullWidth>
-                            <InputLabel id="target-column-label">Target Column</InputLabel>
-                            <Select
-                                name="targetColumn"
-                                labelId="target-column-label"
-                                id="target-column-select"
-                                value={state.targetColumn}
-                                label="Target Column"
-                                onChange={handleInputChange}
-                            >
-                                {state.columns.map((col, index) => (
-                                    <MenuItem key={index} value={col}>{col}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
+                    {state.data.length > 0 && <Grid item xs={2}>
+                        <TargetColumnSelect
+                            columns={state.columns}
+                            value={state.targetColumn}
+                            onChange={handleInputChange}
+                        />
+                    </Grid>}
 
                     <Grid item xs={12}>
                         <Grid container spacing={8} alignItems="center">
                             <Grid item>
-                                <Typography variant="h6" gutterBottom>
-                                    Model Type
-                                </Typography>
-                                <FormControl component="fieldset">
-                                    <RadioGroup row aria-label="model-type" name="modelType" value={state.modelType} onChange={handleInputChange}>
-                                        <FormControlLabel value="regression" control={<Radio />} label="Regression" />
-                                        <FormControlLabel value="classification" control={<Radio />} label="Classification" />
-                                    </RadioGroup>
-                                </FormControl>
+                                <ModelTypeRadioGroup
+                                    value={state.modelType}
+                                    onChange={handleInputChange}
+                                />
                             </Grid>
                             <Grid item>
-                                <Typography variant="h6" gutterBottom>
-                                    Training Speed
-                                </Typography>
-                                <FormControl component="fieldset">
-                                    <RadioGroup row aria-label="training-speed" name="trainingSpeed" value={state.trainingSpeed} onChange={handleInputChange}>
-                                        <FormControlLabel value="fast" control={<Radio />} label="Fast Training" />
-                                        <FormControlLabel value="slow" control={<Radio />} label="Slow Training But More Accurate" />
-                                    </RadioGroup>
-                                </FormControl>
+                                <TrainingSpeedRadioGroup
+                                    value={state.trainingSpeed}
+                                    onChange={handleInputChange}
+                                />
                             </Grid>
                         </Grid>
                     </Grid>
