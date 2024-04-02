@@ -1,8 +1,13 @@
+import React, { useState, useEffect } from 'react'
+import { DataGrid } from '@mui/x-data-grid'
+import { Grid } from '@mui/material';
 import makeRequest from '../api'
-import React, { useState, useEffect } from 'react';
-import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
-
+const columns = [
+  { field: 'id', headerName: 'Name' },
+  { field: 'description', headerName: 'Description', width: 300 },
+  { field: 'created_at', headerName: 'Created At', width: 200 }
+]
 
 const getUserModels = async () => {
   try {
@@ -18,54 +23,44 @@ const getUserModels = async () => {
 };
 
 const UserModels = () => {
-  const [aiModels, setAiModels] = useState([]);
+  const [tableData, setTableData] = useState([])
+  const [pageSize] = useState(5);
 
   useEffect(() => {
-    console.log("rendering!!!!!")
     const fetchData = async () => {
       const response = await getUserModels();
-      const modelsObject = response.data.models; // Assuming the structure you showed
-      const modelsArray = Object.keys(modelsObject).map(key => ({
-        ...modelsObject[key],
-        name: key.replace(/_/g, ' ') // Replacing underscores with spaces
-      }));
-      setAiModels(modelsArray);
-      console.log(aiModels)
+      const modelsArray = response.data.models;
+      setTableData(modelsArray);
+      console.log(tableData)
     };
 
     fetchData();
-  }, []);
+  }, []);  // added [] to avoid infinety rerendering
+
+  console.log(tableData)
 
   return (
-    <Grid container justifyContent="center" sx={{ mt: 16 }}> {/* Added top margin here */}
+    <Grid container justifyContent="center" sx={{ mt: 16 }} >
       <Grid item xs={12} md={8} lg={6}>
-        <TableContainer component={Paper} sx={{ maxHeight: '70vh', overflow: 'auto' }}>
-          <Table stickyHeader sx={{ maxWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell style={{ fontWeight: 'bold' }}>Name</TableCell>
-                <TableCell style={{ fontWeight: 'bold' }}>Description</TableCell>
-                <TableCell style={{ fontWeight: 'bold' }}>Created At</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {aiModels.map((model) => (
-                <TableRow key={model.name}>
-                  <TableCell component="th" scope="row">
-                    {model.name}
-                  </TableCell>
-                  <TableCell>{model.description}</TableCell>
-                  <TableCell>{model.created_at}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <div style={{ height: 400, width: '100%' }}>
+          <DataGrid
+            initialState={{
+              ...tableData.initialState,
+              pagination: { paginationModel: { pageSize: pageSize, } },
+            }}
+            pageSizeOptions={[5, 10, 25]}
+            rows={tableData}
+            columns={columns}
+            sx={{
+              '& .MuiDataGrid-columnHeaderTitle': {
+                fontWeight: 'bold', // Make the header font bold
+              },
+            }}
+          />
+        </div>
       </Grid>
     </Grid>
-  );
-};
+  )
+}
 
-export default UserModels;
-
-
+export default UserModels
