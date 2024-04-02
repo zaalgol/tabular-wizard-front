@@ -6,14 +6,16 @@ import {
 
 import Login from "../authentication/Login";
 import MainPage from "./MainPage";
-import FileUpload from "../ai/FileUpload"
+import TrainModel from "../ai/TrainModel"
+import UserModels from "../ai/UserModels"
 
 function Routers() {
   return (
     <Routes>
       <Route path="login" element={<Login />} />
       <Route path="/" element={<MainPage />} />
-      <Route path="/trainModel" element={<FileUpload />} />
+      <Route path="/trainModel" element={<TrainModel />} />
+      <Route path="/userModels" element={<UserModels />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

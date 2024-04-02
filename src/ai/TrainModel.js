@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
-    Container, Grid, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TextField, Select, MenuItem,
-    FormControl, Radio, RadioGroup, InputLabel, FormControlLabel, Typography, TablePagination, Box
+    Container, Grid, Select, MenuItem,
+    FormControl, InputLabel,  Box
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import makeRequest from '../api'
 
-import { ModelNameInput, DescriptionInput, TargetColumnSelect, ModelTypeRadioGroup, TrainingSpeedRadioGroup } from './ModelFormComponents'; // Adjust the path as necessary
+import { ModelNameInput, DescriptionInput, TargetColumnSelect, ModelTypeRadioGroup, TrainingSpeedRadioGroup, UploadFile, DatasetContent, TitleView }
+    from './ModelFormComponents';
 
 const ROWS_PER_PAGE = 10; // Set the number of rows per page
 const INITIAL_PAGE = 1;
 
 
-
-function FileUpload() {
+function TrainModel() {
     const [state, setState] = useState({
         modelName: '',
         description: '',
@@ -84,10 +84,6 @@ function FileUpload() {
         setState(prev => ({ ...prev, columnOptions: initialOptions }));
     }, [state.columns]);
 
-
-    const handleChangePage = (event, newPage) => {
-        setState(prev => ({ ...prev, currentPage: newPage + 1 }));
-    };
 
     const handleChangeRowsPerPage = (event) => {
         setState(prev => ({
@@ -164,9 +160,8 @@ function FileUpload() {
     return (
         <Box sx={{ p: 4 }}> {/* Use Box to provide padding around the entire component */}
             <Container maxWidth={false} sx={containerStyles}>
-                <Typography variant="h4" gutterBottom>
-                    Train Model
-                </Typography>
+                <TitleView titleText="Train Model">
+                </TitleView>
                 <Grid container spacing={3}>
                     <Grid item xs={2} sx={gridItemStyles}>
                         <ModelNameInput
@@ -181,54 +176,20 @@ function FileUpload() {
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <LoadingButton
-                            variant="contained"
-                            component="label"
+                        <UploadFile
+                            onChange={handleFileChange}
                             loading={state.isLoading}
                         >
-                            Upload File
-                            <input
-                                type="file"
-                                hidden
-                                accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                onChange={handleFileChange} />
-                        </LoadingButton>
+                        </UploadFile>
                     </Grid>
                     <Grid item xs={12}>
-                        <TableContainer component={Paper} sx={{ maxHeight: 400, overflow: 'auto' }}>
-                            <Table stickyHeader aria-label="sticky table">
-                                <TableHead>
-                                    <TableRow>
-                                        {state.columns.map((col, index) => (
-                                            <TableCell key={index}>
-                                                <Typography variant="h6">{col}</Typography>
-                                                {renderColumnOptions(index)}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {state.data
-                                        .slice(1)
-                                        .slice((state.currentPage - 1) * state.rowsPerPage, state.currentPage * state.rowsPerPage)
-                                        .map((row, rowIndex) => (
-                                            <TableRow key={rowIndex}>
-                                                {row.map((cell, cellIndex) => (
-                                                    <TableCell key={cellIndex}>{cell}</TableCell>
-                                                ))}
-                                            </TableRow>
-                                        ))}
-                                </TableBody>
-                            </Table>
-                            {state.data.length > 0 && <TablePagination
-                                rowsPerPageOptions={[5, 10, 25]}
-                                component="div"
-                                count={state.data.length}
-                                rowsPerPage={state.rowsPerPage}
-                                page={state.currentPage - 1} // Subtract 1 for zero-indexed page prop
-                                onPageChange={handleChangePage}
-                                onRowsPerPageChange={handleChangeRowsPerPage} />}
-                        </TableContainer>
+                        <DatasetContent
+                            state={state}
+                            renderColumnOptions={renderColumnOptions}
+                            handleChangePage={renderColumnOptions}
+                            handleChangeRowsPerPage={handleChangeRowsPerPage}
+                        >
+                        </DatasetContent>
                     </Grid>
                     {state.data.length > 0 && <Grid item xs={2}>
                         <TargetColumnSelect
@@ -237,7 +198,6 @@ function FileUpload() {
                             onChange={handleInputChange}
                         />
                     </Grid>}
-
                     <Grid item xs={12}>
                         <Grid container spacing={8} alignItems="center">
                             <Grid item>
@@ -271,4 +231,4 @@ function FileUpload() {
     );
 }
 
-export default FileUpload;
+export default TrainModel;
