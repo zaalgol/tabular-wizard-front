@@ -27,12 +27,12 @@ export const ModelNameInput = ({ value, onChange, readOnly = false }) => (
 );
 
 // Description Input
-export const DescriptionInput = ({ value, onChange, readOnly = false }) => (
+export const DescriptionInput = ({ value, onChange, label='', readOnly = false }) => (
     <TextField
         required
         fullWidth
         name="description"
-        label="Description"
+        label={label}
         value={value}
         onChange={onChange}
         InputProps={{ readOnly }}

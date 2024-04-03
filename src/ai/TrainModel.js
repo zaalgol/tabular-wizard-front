@@ -171,6 +171,7 @@ function TrainModel() {
                     </Grid>
                     <Grid item xs={4} sx={gridItemStyles}>
                         <DescriptionInput
+                            label="Description"
                             value={state.description}
                             onChange={handleInputChange}
                         />

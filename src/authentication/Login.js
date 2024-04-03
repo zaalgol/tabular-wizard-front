@@ -19,7 +19,7 @@ function Login() {
       if (response.status === 200) {
         setIsAuthenticated(true);
         localStorage.setItem('access_token', response.data.access_token);
-        window.location.replace('/');
+        window.location.replace('/userModels');
           
       }
     } catch (error) {
