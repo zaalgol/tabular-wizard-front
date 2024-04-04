@@ -26,30 +26,82 @@ const getModelDetails = async (modelName) => {
     }
 };
 
-const setColumns = (modelDataColumns) => {
-    return modelDataColumns.map(column => {
-        return { field: column, headerName: column }
-    })
-}
-
 const Inference = () => {
     const [searchParams] = useSearchParams();
     const modelName = searchParams.get('model');
-    const [modelData, setState] = useState({
+    const [modelState, setModelState] = useState({
         columns: []
-
     });
+    const [inferenceData, setInferenceDataData] = useState({});
+    const [pageStage, setPageStage] = useState({});
 
     useEffect(() => {
         const fetchData = async () => {
             const response = await getModelDetails(modelName);
             const modelData = response.data.model;
-            setState(modelData);
+            setModelState(prev => ({ ...prev, ...modelData }));
             console.log(modelData)
         };
 
         fetchData();
     }, []);  // added [] to avoid infinety rerendering
+
+    const handleFileChange = (e) => {
+        const files = e.target.files;
+        if (files && files[0]) {
+            setPageStage(prev => ({ ...prev, isLoading: true }));
+            const file = files[0];
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                const bstr = evt.target.result;
+                const wb = XLSX.read(bstr, { type: 'binary' });
+                const wsname = wb.SheetNames[0];
+                const ws = wb.Sheets[wsname];
+                const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+                if (jsonData.length > 0) {
+                    setInferenceDataData(prev => ({
+                        ...prev,
+                        ...jsonData,
+                    }));
+                    setPageStage(prev => ({
+                        ...prev,
+                        isLoading: false,
+                    }));
+                }
+            };
+            reader.onerror = (error) => {
+                console.error('Error reading file:', error);
+                setPageStage(prev => ({ ...prev, isLoading: false }));
+            };
+            reader.readAsBinaryString(file);
+        } else {
+            console.error('No file selected');
+        }
+    };
+
+    const handleSubmit = async () => {
+        setPageStage(prev => ({ ...prev, isSubmitting: true }));
+        try {
+            // convert dict to matrix
+            const inferenceDataMatrix = [];
+            Object.keys(inferenceData).forEach(key => {
+                inferenceDataMatrix.push(inferenceData[key]);
+            });
+            // Prepare the payload
+            const payload = {
+                dataset: inferenceDataMatrix,
+                modelName: modelName,
+            };
+
+            // Send the data to the server
+            const response = await makeRequest('/api/inference/', 'POST', payload, {}, true); // Adjust the endpoint as necessary
+            console.log(response.data); // Handle the response as needed
+        } catch (error) {
+            console.error('Error submitting the data:', error);
+        }
+        setPageStage(prev => ({ ...prev, isSubmitting: false }));
+    };
+
 
     // Add custom styling here
     const containerStyles = {
@@ -76,13 +128,15 @@ const Inference = () => {
                     </Grid>
                     <Grid item xs={4} sx={gridItemStyles}>
                         <DescriptionInput
-                            value={modelData.description}
+                            // readOnly = {true}
+                            value={modelState.description}
                             label=""
                         />
                     </Grid>
                     <Grid item xs={12}>
                         <UploadFile
-                            loading={modelData.isLoading}
+                            loading={modelState.isLoading}
+                            onChange={handleFileChange}
                         >
                         </UploadFile>
                     </Grid>
@@ -94,7 +148,7 @@ const Inference = () => {
                                         Model: {modelName}
                                     </Typography>
                                     <List>
-                                        {modelData['columns'].map((column, index) => (
+                                        {modelState['columns'].map((column, index) => (
                                             <ListItem key={index}>
                                                 <ListItemText primary={column} />
                                             </ListItem>
@@ -107,19 +161,24 @@ const Inference = () => {
                     {<Grid item xs={2}>
                         <DescriptionInput
                             label={""}
-                            value={modelData.target_column}
+                            value={modelState.target_column}
                         />
                     </Grid>}
                     <Grid item xs={12}>
                         <Grid container spacing={8} alignItems="center">
                             <Grid item>
                                 <ModelTypeRadioGroup
-                                    value={modelData.modelType}
+                                    readOnly={true}
+                                    value={modelState.model_type || ''}
+                                    onChange={(event) => setModelState({ ...modelState, model_type: event.target.value })}
                                 />
                             </Grid>
                             <Grid item>
                                 <TrainingSpeedRadioGroup
-                                    value={modelData.trainingSpeed}
+                                    readOnly={true}
+                                    value={modelState.training_speed || ''}
+                                    onChange={(event) => setModelState({ ...modelState, training_speed: event.target.value })}
+
                                 />
                             </Grid>
                         </Grid>
@@ -129,7 +188,7 @@ const Inference = () => {
                         <LoadingButton
                             variant="contained"
                             color="primary"
-                            // loading={modelData.isSubmitting}
+                            onClick={handleSubmit}
                         >
                             Infrence
                         </LoadingButton>
@@ -137,25 +196,6 @@ const Inference = () => {
                 </Grid>
             </Container>
         </Box>
-    );
-
-    return (
-        <Grid container justifyContent="center" sx={{ mt: 16 }}>
-            <Grid item xs={12} md={8} lg={6}>
-                <Paper elevation={3} sx={{ maxHeight: 400, overflow: 'auto', p: 2 }}>
-                    <Typography variant="h6" gutterBottom>
-                        Model: {modelName}
-                    </Typography>
-                    <List>
-                        {modelData['columns'].map((column, index) => (
-                            <ListItem key={index}>
-                                <ListItemText primary={column} />
-                            </ListItem>
-                        ))}
-                    </List>
-                </Paper>
-            </Grid>
-        </Grid>
     );
 }
 
