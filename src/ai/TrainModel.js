@@ -5,10 +5,12 @@ import {
     FormControl, InputLabel,  Box
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import makeRequest from '../api'
+import makeRequest from '../api';
 
-import { ModelNameInput, DescriptionInput, TargetColumnSelect, ModelTypeRadioGroup, TrainingSpeedRadioGroup, UploadFile, DatasetContent, TitleView }
-    from './ModelFormComponents';
+import {
+    ModelNameInput, DescriptionInput, TargetColumnSelect,
+    ModelTypeRadioGroup, TrainingSpeedRadioGroup, UploadFile, DatasetContent, TitleView
+  } from './ModelFormComponents';
 
 const ROWS_PER_PAGE = 10; // Set the number of rows per page
 const INITIAL_PAGE = 1;
