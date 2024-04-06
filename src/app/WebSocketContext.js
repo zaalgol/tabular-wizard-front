@@ -16,6 +16,17 @@ export const WebSocketProvider = ({ children }) => {
 
         newSocket.on('status', message => {
             setMessages(prevMessages => [...prevMessages, message]);
+            if (message["status"] === 'success' && message["csv_url"]) {
+                // If the message has a CSV URL, prompt the user to download the file
+                const downloadLink = document.createElement('a');
+                // downloadLink.href = message["csv_url"];
+                const token = localStorage.getItem('access_token');
+                downloadLink.href = `${message["csv_url"]}?Authorization=${token}&model_name=${message["model_name"]}`;
+                downloadLink.download = 'dataset.csv';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+              }
         });
 
         return () => {
