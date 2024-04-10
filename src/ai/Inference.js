@@ -30,17 +30,20 @@ const Inference = () => {
     const [searchParams] = useSearchParams();
     const modelName = searchParams.get('model');
 
-    const [modelState, setModelState] = useState({
-        columns: []
+    const [state, setState] = useState({
+        columns: [],
+        data: [],
+        datasetError: '',
+        isLoading: false,
+        isSubmitting: false,
+        model: {}
     });
-    const [inferenceData, setInferenceData] = useState({data: [] });
-    const [pageStage, setPageStage] = useState({datasetError: ''});
-    
+
     const validateDataset = () => {
-        if (inferenceData.data.length === 0) {
-            setPageStage(prev => ({ ...prev, datasetError: 'Please upload a dataset file.' }));
+        if (state.data.length === 0) {
+            setState(prev => ({ ...prev, datasetError: 'Please upload a dataset file.' }));
         } else {
-            setPageStage(prev => ({ ...prev, datasetError: '' }));
+            setState(prev => ({ ...prev, datasetError: '' }));
         }
     };
 
@@ -49,17 +52,26 @@ const Inference = () => {
             validateDataset();
             const response = await getModelDetails(modelName);
             const modelData = response.data.model;
-            setModelState(prev => ({ ...prev, ...modelData }));
-            console.log(modelData)
+            setState(prev => ({ ...prev, model: modelData }));
+            console.log(modelData);
         };
 
         fetchData();
-    }, [pageStage.datasetError, inferenceData]);  // added [] to avoid infinety rerendering
+    }, [state.datasetError, state.data]);
+
+    function updateData(jsonData) {
+        setState(prev => ({
+            ...prev,
+            columns: jsonData[0],
+            data: jsonData,
+            isLoading: false,
+        }));
+    }
 
     const handleFileChange = (e) => {
         const files = e.target.files;
         if (files && files[0]) {
-            setPageStage(prev => ({ ...prev, isLoading: true }));
+            setState(prev => ({ ...prev, isLoading: true }));
             const file = files[0];
             const reader = new FileReader();
             reader.onload = (evt) => {
@@ -69,20 +81,16 @@ const Inference = () => {
                 const ws = wb.Sheets[wsname];
                 const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
                 if (jsonData.length > 0) {
-                    setInferenceData(prev => ({
+                    setState(prev => ({
                         ...prev,
                         data: jsonData,
-                    }));
-                    setPageStage(prev => ({
-                        ...prev,
                         isLoading: false,
                     }));
-                    // validateDataset();
                 }
             };
             reader.onerror = (error) => {
                 console.error('Error reading file:', error);
-                setPageStage(prev => ({ ...prev, isLoading: false }));
+                setState(prev => ({ ...prev, isLoading: false }));
             };
             reader.readAsBinaryString(file);
         } else {
@@ -91,26 +99,23 @@ const Inference = () => {
     };
 
     const handleSubmit = async () => {
-        setPageStage(prev => ({ ...prev, isSubmitting: true }));
+        setState(prev => ({ ...prev, isSubmitting: true }));
         try {
-            // convert dict to matrix
             const inferenceDataMatrix = [];
-            Object.keys(inferenceData.data).forEach(key => {
-                inferenceDataMatrix.push(inferenceData[key]);
+            Object.keys(state.data).forEach(key => {
+                inferenceDataMatrix.push(state.data[key]);
             });
-            // Prepare the payload
             const payload = {
-                dataset: inferenceData.data,
+                dataset: state.data,
                 modelName: modelName,
             };
 
-            // Send the data to the server
-            const response = await makeRequest('/api/inference/', 'POST', payload, {}, true); // Adjust the endpoint as necessary
-            console.log(response.data); // Handle the response as needed
+            const response = await makeRequest('/api/inference/', 'POST', payload, {}, true);
+            console.log(response.data);
         } catch (error) {
             console.error('Error submitting the data:', error);
         }
-        setPageStage(prev => ({ ...prev, isSubmitting: false }));
+        setState(prev => ({ ...prev, isSubmitting: false }));
     };
 
 
@@ -126,30 +131,26 @@ const Inference = () => {
 
 
     return (
-        <Box sx={{ p: 4 }}> {/* Use Box to provide padding around the entire component */}
+        <Box sx={{ p: 4 }}>
             <Container maxWidth={false} sx={containerStyles}>
-                <TitleView titleText="Inference">
-                </TitleView>
+                <TitleView titleText="Inference"></TitleView>
                 <Grid container spacing={3}>
                     <Grid item xs={2} sx={gridItemStyles}>
-                        <DescriptionInput
-                            label=""
-                            value={modelName}
-                        />
+                        <DescriptionInput label="" value={modelName} />
                     </Grid>
                     <Grid item xs={4} sx={gridItemStyles}>
                         <DescriptionInput
-                            readOnly = {true}
-                            value={modelState.description}
+                            readOnly={true}
+                            value={state.model.description}
                             label=""
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <UploadFile
-                            loading={modelState.isLoading}
+                        <UploadFile loading={state.isLoading}
                             onChange={handleFileChange}
-                        >
-                        </UploadFile>
+                            updateData={updateData}
+                            setState={setState}
+                        />
                     </Grid>
                     <Grid item xs={12}>
                         <Grid container justifyContent="center" sx={{ mt: 5 }}>
@@ -159,54 +160,70 @@ const Inference = () => {
                                         Model: {modelName}
                                     </Typography>
                                     <List>
-                                        {modelState['columns'].map((column, index) => (
-                                            <ListItem key={index}>
-                                                <ListItemText primary={column} />
-                                            </ListItem>
-                                        ))}
+                                        {state.model.columns &&
+                                            state.model.columns.map((column, index) => (
+                                                <ListItem key={index}>
+                                                    <ListItemText primary={column} />
+                                                </ListItem>
+                                            ))}
                                     </List>
                                 </Paper>
                             </Grid>
                         </Grid>
                     </Grid>
-                    {<Grid item xs={2}>
+                    <Grid item xs={2}>
                         <DescriptionInput
                             label={""}
-                            value={modelState.target_column}
+                            value={state.model.target_column}
                         />
-                    </Grid>}
+                    </Grid>
                     <Grid item xs={12}>
                         <Grid container spacing={8} alignItems="center">
                             <Grid item>
                                 <ModelTypeRadioGroup
                                     readOnly={true}
-                                    value={modelState.model_type || ''}
-                                    onChange={(event) => setModelState({ ...modelState, model_type: event.target.value })}
+                                    value={state.model.model_type || ''}
+                                    onChange={(event) =>
+                                        setState((prev) => ({
+                                            ...prev,
+                                            model: {
+                                                ...prev.model,
+                                                model_type: event.target.value,
+                                            },
+                                        }))
+                                    }
                                 />
                             </Grid>
                             <Grid item>
                                 <TrainingSpeedRadioGroup
                                     readOnly={true}
-                                    value={modelState.training_speed || ''}
-                                    onChange={(event) => setModelState({ ...modelState, training_speed: event.target.value })}
-
+                                    value={state.model.training_speed || ''}
+                                    onChange={(event) =>
+                                        setState((prev) => ({
+                                            ...prev,
+                                            model: {
+                                                ...prev.model,
+                                                training_speed: event.target.value,
+                                            },
+                                        }))
+                                    }
                                 />
                             </Grid>
                         </Grid>
                     </Grid>
                     <Box sx={{ p: 4 }}>
                         <Container maxWidth={false} sx={containerStyles}>
-                            {pageStage.datasetError && <div>{pageStage.datasetError}</div>}
+                            {state.datasetError && <div>{state.datasetError}</div>}
                         </Container>
-                    </Box>                     
+                    </Box>
                     <Grid item xs={12}>
                         <LoadingButton
                             variant="contained"
                             color="primary"
                             onClick={handleSubmit}
-                            disabled={pageStage.datasetError}
+                            disabled={state.datasetError}
                         >
-                            Infrence
+                            Inference
                         </LoadingButton>
                     </Grid>
                 </Grid>

@@ -4,7 +4,7 @@ import {
     FormControl, Radio, RadioGroup, InputLabel, FormControlLabel, Typography, TablePagination
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab'
-
+import * as XLSX from 'xlsx';
 // View title
 export const TitleView = ({titleText}) => ([
     <Typography variant="h4" gutterBottom>
@@ -78,9 +78,35 @@ export const TrainingSpeedRadioGroup = ({ value, onChange, readOnly = false }) =
         </RadioGroup>
     </FormControl>
 );
+const handleFileChange = (updateData, setState) => (e) => {
+    const files = e.target.files;
+    if (files && files[0]) {
+        setState(prev => ({ ...prev, isLoading: true }));
+        const file = files[0];
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            const bstr = evt.target.result;
+            const wb = XLSX.read(bstr, { type: 'binary' });
+            const wsname = wb.SheetNames[0];
+            const ws = wb.Sheets[wsname];
+            const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+            if (jsonData.length > 0) {
+                // Call the updateStateCallback with jsonData.
+                updateData(jsonData);
+            }
+        };
+        reader.onerror = (error) => {
+            console.error('Error reading file:', error);
+            setState(prev => ({ ...prev, isLoading: false }));
+        };
+        reader.readAsBinaryString(file);
+    } else {
+        console.error('No file selected');
+    }
+};
 
 // upload csv/excel file
-export const UploadFile = ({ onChange, loading }) => (
+export const UploadFile = ({ updateData, setState, loading }) => (
     <LoadingButton
         variant="contained"
         component="label"
@@ -91,7 +117,7 @@ export const UploadFile = ({ onChange, loading }) => (
             type="file"
             hidden
             accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            onChange={onChange} />
+            onChange={handleFileChange(updateData, setState)} />
     </LoadingButton>
 )
 

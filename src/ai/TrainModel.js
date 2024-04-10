@@ -67,7 +67,16 @@ function TrainModel() {
         setState(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleFileChange = (e) => {
+    function updateData(jsonData) {
+        setState(prev => ({
+            ...prev,
+            columns: jsonData[0],
+            data: jsonData,
+            isLoading: false,
+        }));
+    }
+
+    const handleFileChange = (updateStateCallback) => (e) => {
         const files = e.target.files;
         if (files && files[0]) {
             setState(prev => ({ ...prev, isLoading: true }));
@@ -80,12 +89,8 @@ function TrainModel() {
                 const ws = wb.Sheets[wsname];
                 const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
                 if (jsonData.length > 0) {
-                    setState(prev => ({
-                        ...prev,
-                        columns: jsonData[0],
-                        data: jsonData,
-                        isLoading: false,
-                    }));
+                    // Call the updateStateCallback with jsonData.
+                    updateStateCallback(jsonData);
                 }
             };
             reader.onerror = (error) => {
@@ -213,7 +218,9 @@ function TrainModel() {
                     </Grid>
                     <Grid item xs={12}>
                         <UploadFile
-                            onChange={handleFileChange}
+                            // onChange={handleFileChange(updateDataState)}
+                            updateData={updateData}
+                            setState={setState}
                             loading={state.isLoading}
                         >
                         </UploadFile>
