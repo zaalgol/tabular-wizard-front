@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
     Container, Grid, Select, MenuItem,
-    FormControl, InputLabel,  Box
+    FormControl, InputLabel, Box
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import makeRequest from '../api';
@@ -10,7 +10,7 @@ import makeRequest from '../api';
 import {
     ModelNameInput, DescriptionInput, TargetColumnSelect,
     ModelTypeRadioGroup, TrainingSpeedRadioGroup, UploadFile, DatasetContent, TitleView
-  } from './ModelFormComponents';
+} from './ModelFormComponents';
 
 const ROWS_PER_PAGE = 10; // Set the number of rows per page
 const INITIAL_PAGE = 1;
@@ -30,7 +30,37 @@ function TrainModel() {
         rowsPerPage: ROWS_PER_PAGE,
         isLoading: false,
         isSubmitting: false,
+        datasetError: '', // Error message for dataset
+        modelNameError: '', // Error message for modelName
+        modelTypeError: '',
     });
+
+    const validateDataset = () => {
+        if (state.data.length <= 1) {
+            setState(prev => ({ ...prev, datasetError: 'Please upload a dataset file.' }));
+        } else {
+            setState(prev => ({ ...prev, datasetError: '' }));
+        }
+    };
+
+    const validateModelName = () => {
+        if (state.modelName.trim() === '') {
+            setState(prev => ({ ...prev, modelNameError: 'Please enter a model name.' }));
+        } else {
+            setState(prev => ({ ...prev, modelNameError: '' }));
+        }
+    };
+
+    const validateModelType = () => {
+        if (state.modelType.trim() === '') {
+            setState(prev => ({ ...prev, modelTypeError: 'Please select a model type.' }));
+        } else {
+            setState(prev => ({ ...prev, modelTypeError: '' }));
+        }
+    };
+    const isValidSubmission = () => {
+        return !state.datasetError  && !state.modelNameError && !state.modelTypeError;
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -79,12 +109,15 @@ function TrainModel() {
     };
 
     useEffect(() => {
+        validateDataset();
+        validateModelName();
+        validateModelType();
         const initialOptions = state.columns.reduce((options, _, colIndex) => ({
             ...options,
             [colIndex]: 'raw',
         }), {});
         setState(prev => ({ ...prev, columnOptions: initialOptions }));
-    }, [state.columns]);
+    }, [state.data, state.modelName, state.modelType, state.columns]);
 
 
     const handleChangeRowsPerPage = (event) => {
@@ -217,13 +250,23 @@ function TrainModel() {
                             </Grid>
                         </Grid>
                     </Grid>
-
+                    <Box sx={{ p: 4 }}>
+                        <Container maxWidth={false} sx={containerStyles}>
+                            {state.datasetError && <div>{state.datasetError}</div>}
+                            {state.modelNameError && <div>{state.modelNameError}</div>}
+                            {state.modelTypeError && <div>{state.modelTypeError}</div>}
+                            <Grid container spacing={3}>
+                                {/* ... */}
+                            </Grid>
+                        </Container>
+                    </Box>
                     <Grid item xs={12}>
                         <LoadingButton
                             variant="contained"
                             color="primary"
                             onClick={handleSubmit}
                             loading={state.isSubmitting}
+                        disabled={!isValidSubmission()}
                         >
                             Submit
                         </LoadingButton>

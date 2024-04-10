@@ -29,14 +29,24 @@ const getModelDetails = async (modelName) => {
 const Inference = () => {
     const [searchParams] = useSearchParams();
     const modelName = searchParams.get('model');
+
     const [modelState, setModelState] = useState({
         columns: []
     });
-    const [inferenceData, setInferenceDataData] = useState({});
-    const [pageStage, setPageStage] = useState({});
+    const [inferenceData, setInferenceData] = useState({data: [] });
+    const [pageStage, setPageStage] = useState({datasetError: ''});
+    
+    const validateDataset = () => {
+        if (inferenceData.data.length === 0) {
+            setPageStage(prev => ({ ...prev, datasetError: 'Please upload a dataset file.' }));
+        } else {
+            setPageStage(prev => ({ ...prev, datasetError: '' }));
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
+            validateDataset();
             const response = await getModelDetails(modelName);
             const modelData = response.data.model;
             setModelState(prev => ({ ...prev, ...modelData }));
@@ -44,7 +54,7 @@ const Inference = () => {
         };
 
         fetchData();
-    }, []);  // added [] to avoid infinety rerendering
+    }, [pageStage.datasetError, inferenceData]);  // added [] to avoid infinety rerendering
 
     const handleFileChange = (e) => {
         const files = e.target.files;
@@ -59,14 +69,15 @@ const Inference = () => {
                 const ws = wb.Sheets[wsname];
                 const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
                 if (jsonData.length > 0) {
-                    setInferenceDataData(prev => ({
+                    setInferenceData(prev => ({
                         ...prev,
-                        ...jsonData,
+                        data: jsonData,
                     }));
                     setPageStage(prev => ({
                         ...prev,
                         isLoading: false,
                     }));
+                    // validateDataset();
                 }
             };
             reader.onerror = (error) => {
@@ -84,12 +95,12 @@ const Inference = () => {
         try {
             // convert dict to matrix
             const inferenceDataMatrix = [];
-            Object.keys(inferenceData).forEach(key => {
+            Object.keys(inferenceData.data).forEach(key => {
                 inferenceDataMatrix.push(inferenceData[key]);
             });
             // Prepare the payload
             const payload = {
-                dataset: inferenceDataMatrix,
+                dataset: inferenceData.data,
                 modelName: modelName,
             };
 
@@ -128,7 +139,7 @@ const Inference = () => {
                     </Grid>
                     <Grid item xs={4} sx={gridItemStyles}>
                         <DescriptionInput
-                            // readOnly = {true}
+                            readOnly = {true}
                             value={modelState.description}
                             label=""
                         />
@@ -183,12 +194,17 @@ const Inference = () => {
                             </Grid>
                         </Grid>
                     </Grid>
-
+                    <Box sx={{ p: 4 }}>
+                        <Container maxWidth={false} sx={containerStyles}>
+                            {pageStage.datasetError && <div>{pageStage.datasetError}</div>}
+                        </Container>
+                    </Box>                     
                     <Grid item xs={12}>
                         <LoadingButton
                             variant="contained"
                             color="primary"
                             onClick={handleSubmit}
+                            disabled={pageStage.datasetError}
                         >
                             Infrence
                         </LoadingButton>

@@ -1,15 +1,16 @@
 import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { TextField, Button, Container, Box, Typography, CssBaseline } from '@mui/material';
-import './Login.css'; // Import the CSS file here
+import './Login.css';
 import makeRequest from '../api'
 
-// axios.defaults.withCredentials = true;
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { setIsAuthenticated } = useContext(AuthContext);
+  const navigate = useNavigate(); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,7 +20,7 @@ function Login() {
       if (response.status === 200) {
         setIsAuthenticated(true);
         localStorage.setItem('access_token', response.data.access_token);
-        window.location.replace('/userModels');
+        navigate('/userModels'); 
           
       }
     } catch (error) {
