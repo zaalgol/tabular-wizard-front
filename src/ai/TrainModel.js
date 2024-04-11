@@ -76,33 +76,6 @@ function TrainModel() {
         }));
     }
 
-    const handleFileChange = (updateStateCallback) => (e) => {
-        const files = e.target.files;
-        if (files && files[0]) {
-            setState(prev => ({ ...prev, isLoading: true }));
-            const file = files[0];
-            const reader = new FileReader();
-            reader.onload = (evt) => {
-                const bstr = evt.target.result;
-                const wb = XLSX.read(bstr, { type: 'binary' });
-                const wsname = wb.SheetNames[0];
-                const ws = wb.Sheets[wsname];
-                const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
-                if (jsonData.length > 0) {
-                    // Call the updateStateCallback with jsonData.
-                    updateStateCallback(jsonData);
-                }
-            };
-            reader.onerror = (error) => {
-                console.error('Error reading file:', error);
-                setState(prev => ({ ...prev, isLoading: false }));
-            };
-            reader.readAsBinaryString(file);
-        } else {
-            console.error('No file selected');
-        }
-    };
-
     const handleOptionChange = (colIndex, event) => {
         setState(prev => ({
             ...prev,

@@ -68,36 +68,6 @@ const Inference = () => {
         }));
     }
 
-    const handleFileChange = (e) => {
-        const files = e.target.files;
-        if (files && files[0]) {
-            setState(prev => ({ ...prev, isLoading: true }));
-            const file = files[0];
-            const reader = new FileReader();
-            reader.onload = (evt) => {
-                const bstr = evt.target.result;
-                const wb = XLSX.read(bstr, { type: 'binary' });
-                const wsname = wb.SheetNames[0];
-                const ws = wb.Sheets[wsname];
-                const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
-                if (jsonData.length > 0) {
-                    setState(prev => ({
-                        ...prev,
-                        data: jsonData,
-                        isLoading: false,
-                    }));
-                }
-            };
-            reader.onerror = (error) => {
-                console.error('Error reading file:', error);
-                setState(prev => ({ ...prev, isLoading: false }));
-            };
-            reader.readAsBinaryString(file);
-        } else {
-            console.error('No file selected');
-        }
-    };
-
     const handleSubmit = async () => {
         setState(prev => ({ ...prev, isSubmitting: true }));
         try {
@@ -147,7 +117,7 @@ const Inference = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <UploadFile loading={state.isLoading}
-                            onChange={handleFileChange}
+                            // onChange={handleFileChange}
                             updateData={updateData}
                             setState={setState}
                         />
