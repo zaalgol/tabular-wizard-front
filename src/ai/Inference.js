@@ -36,7 +36,9 @@ const Inference = () => {
         datasetError: '',
         isLoading: false,
         isSubmitting: false,
-        model: {}
+        model: {},
+        fileName: '',
+        fileSize: 0,
     });
 
     const validateDataset = () => {
@@ -78,6 +80,7 @@ const Inference = () => {
             const payload = {
                 dataset: state.data,
                 modelName: modelName,
+                fileName: state.fileName
             };
 
             const response = await makeRequest('/api/inference/', 'POST', payload, {}, true);
@@ -117,7 +120,7 @@ const Inference = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <UploadFile loading={state.isLoading}
-                            // onChange={handleFileChange}
+                            state={state}
                             updateData={updateData}
                             setState={setState}
                         />

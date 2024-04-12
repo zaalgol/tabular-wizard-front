@@ -33,6 +33,8 @@ function TrainModel() {
         datasetError: '', // Error message for dataset
         modelNameError: '', // Error message for modelName
         modelTypeError: '',
+        fileName: '',
+        fileSize: 0,
     });
 
     const validateDataset = () => {
@@ -191,7 +193,7 @@ function TrainModel() {
                     </Grid>
                     <Grid item xs={12}>
                         <UploadFile
-                            // onChange={handleFileChange(updateDataState)}
+                            state={state}
                             updateData={updateData}
                             setState={setState}
                             loading={state.isLoading}

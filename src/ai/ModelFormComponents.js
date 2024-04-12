@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-    Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TextField, Select, MenuItem,
+    Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TextField, Button, Select, MenuItem,
     FormControl, Radio, RadioGroup, InputLabel, FormControlLabel, Typography, TablePagination
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab'
 import * as XLSX from 'xlsx';
 // View title
-export const TitleView = ({titleText}) => ([
+export const TitleView = ({ titleText }) => ([
     <Typography variant="h4" gutterBottom>
         {titleText}
     </Typography>
@@ -27,7 +27,7 @@ export const ModelNameInput = ({ value, onChange, readOnly = false }) => (
 );
 
 // Description Input
-export const DescriptionInput = ({ value, onChange, label='', readOnly = false }) => (
+export const DescriptionInput = ({ value, onChange, label = '', readOnly = false }) => (
     <TextField
         required
         fullWidth
@@ -78,48 +78,61 @@ export const TrainingSpeedRadioGroup = ({ value, onChange, readOnly = false }) =
         </RadioGroup>
     </FormControl>
 );
-const handleFileChange = (updateData, setState) => (e) => {
-    const files = e.target.files;
-    if (files && files[0]) {
-        setState(prev => ({ ...prev, isLoading: true }));
-        const file = files[0];
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-            const bstr = evt.target.result;
-            const wb = XLSX.read(bstr, { type: 'binary' });
-            const wsname = wb.SheetNames[0];
-            const ws = wb.Sheets[wsname];
-            const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
-            if (jsonData.length > 0) {
-                // Call the updateStateCallback with jsonData.
-                updateData(jsonData);
-            }
-        };
-        reader.onerror = (error) => {
-            console.error('Error reading file:', error);
-            setState(prev => ({ ...prev, isLoading: false }));
-        };
-        reader.readAsBinaryString(file);
-    } else {
-        console.error('No file selected');
-    }
-};
 
-// upload csv/excel file
-export const UploadFile = ({ updateData, setState, loading }) => (
-    <LoadingButton
-        variant="contained"
-        component="label"
-        loading={loading}
-    >
-        Upload File
-        <input
-            type="file"
-            hidden
-            accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            onChange={handleFileChange(updateData, setState)} />
-    </LoadingButton>
-)
+export const UploadFile = ({ state, updateData, setState, loading }) => {
+    // const [loading, setLoading] = useState(false);
+    // const [fileInfo, setFileInfo] = useState({ fileName: '', fileSize: 0 });
+
+    const handleFileChange = (e) => {
+        const files = e.target.files;
+        if (files && files[0]) {
+            const file = files[0];
+            setState(prev => ({ ...prev, isLoading: true}));
+            setState(prev => ({ ...prev, fileName: file.name, fileSize: file.size }));
+
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                const bstr = evt.target.result;
+                const wb = XLSX.read(bstr, { type: 'binary' });
+                const wsname = wb.SheetNames[0];
+                const ws = wb.Sheets[wsname];
+                const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+                if (jsonData.length > 0) {
+                    updateData(jsonData);
+                }
+                setState(prev => ({ ...prev, isLoading: false }));
+            };
+            reader.onerror = () => {
+                console.error('Error reading file');
+                setState(prev => ({ ...prev, isLoading: false }));
+            };
+            reader.readAsBinaryString(file);
+        }
+    };
+
+    return (
+        <div>
+            <LoadingButton
+                variant="contained"
+                component="label"
+                loading={loading}
+            >
+                Upload File
+                <input
+                    type="file"
+                    hidden
+                    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    onChange={handleFileChange}
+                />
+            </LoadingButton>
+            {state.fileName && (
+                <Typography variant="subtitle1" style={{ marginTop: 10 }}>
+                    File selected: {state.fileName}
+                </Typography>
+            )}
+        </div>
+    );
+};
 
 export const DatasetContent = ({ state, renderColumnOptions, handleChangePage, handleChangeRowsPerPage }) => (
     <TableContainer component={Paper} sx={{ maxHeight: 400, overflow: 'auto' }}>
