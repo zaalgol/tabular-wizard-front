@@ -33,6 +33,7 @@ function TrainModel() {
         datasetError: '', // Error message for dataset
         modelNameError: '', // Error message for modelName
         modelTypeError: '',
+        targetColumnError: '',
         fileName: '',
         fileSize: 0,
     });
@@ -60,8 +61,18 @@ function TrainModel() {
             setState(prev => ({ ...prev, modelTypeError: '' }));
         }
     };
+
+    const validateTargetColumn = () => {
+        if (state.data.length > 1 && state.targetColumn.trim() === '') {
+            setState(prev => ({ ...prev, targetColumnError: 'Please select a target column.' }));
+        } else {
+            setState(prev => ({ ...prev, targetColumnError: '' }));
+        }
+    };
+
+
     const isValidSubmission = () => {
-        return !state.datasetError  && !state.modelNameError && !state.modelTypeError;
+        return !state.datasetError  && !state.modelNameError && !state.modelTypeError && !state.targetColumnError;
     };
 
     const handleInputChange = (e) => {
@@ -92,12 +103,13 @@ function TrainModel() {
         validateDataset();
         validateModelName();
         validateModelType();
+        validateTargetColumn();
         const initialOptions = state.columns.reduce((options, _, colIndex) => ({
             ...options,
             [colIndex]: 'raw',
         }), {});
         setState(prev => ({ ...prev, columnOptions: initialOptions }));
-    }, [state.data, state.modelName, state.modelType, state.columns]);
+    }, [state.data, state.modelName, state.modelType, state.columns, state.targetColumn]);
 
 
     const handleChangeRowsPerPage = (event) => {
@@ -237,6 +249,7 @@ function TrainModel() {
                             {state.datasetError && <div>{state.datasetError}</div>}
                             {state.modelNameError && <div>{state.modelNameError}</div>}
                             {state.modelTypeError && <div>{state.modelTypeError}</div>}
+                            {state.targetColumnError && <div>{state.targetColumnError}</div>}
                             <Grid container spacing={3}>
                                 {/* ... */}
                             </Grid>

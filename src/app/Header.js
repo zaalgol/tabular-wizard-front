@@ -3,6 +3,7 @@ import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { AuthContext } from '../authentication/AuthContext';
 import useLogout from '../authentication/useLogout';
+import { Link } from 'react-router-dom'; // Import the Link component
 import './Header.css'; // Import the CSS file here
 
 const Header = () => {
@@ -24,6 +25,16 @@ const Header = () => {
         <Typography variant="h6" component="div" className="title">
           React Login Demo
         </Typography>
+        <Link to="/trainModel" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Button color="inherit">
+            Train Model
+          </Button>
+        </Link>
+        <Link to="/userModels" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Button color="inherit">
+            User Models
+          </Button>
+        </Link>
         {isAuthenticated && (
           <Button color="inherit" onClick={logout}>
             Logout
