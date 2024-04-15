@@ -12,7 +12,7 @@ import {
     ModelTypeRadioGroup, TrainingSpeedRadioGroup, UploadFile, DatasetContent, TitleView
 } from './ModelFormComponents';
 
-const ROWS_PER_PAGE = 10; // Set the number of rows per page
+const ROWS_PER_PAGE = 5; // Set the number of rows per page
 const INITIAL_PAGE = 1;
 
 
@@ -176,7 +176,7 @@ function TrainModel() {
 
     // Add custom styling here
     const containerStyles = {
-        marginTop: '16px', // Adjust the top margin
+        marginTop: '4px', // Adjust the top margin
         marginRight: '16px', // Adjust the right margin
     };
 
@@ -185,7 +185,7 @@ function TrainModel() {
     };
 
     return (
-        <Box sx={{ p: 4 }}> {/* Use Box to provide padding around the entire component */}
+        <Box sx={{ p: 1 }}> {/* Use Box to provide padding around the entire component */}
             <Container maxWidth={false} sx={containerStyles}>
                 <TitleView titleText="Train Model">
                 </TitleView>
@@ -244,7 +244,7 @@ function TrainModel() {
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Box sx={{ p: 4 }}>
+                    <Box sx={{ p: 1 }}>
                         <Container maxWidth={false} sx={containerStyles}>
                             {state.datasetError && <div>{state.datasetError}</div>}
                             {state.modelNameError && <div>{state.modelNameError}</div>}

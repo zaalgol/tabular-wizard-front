@@ -126,7 +126,7 @@ export const UploadFile = ({ state, updateData, setState, loading }) => {
                 />
             </LoadingButton>
             {state.fileName && (
-                <Typography variant="subtitle1" style={{ marginTop: 10 }}>
+                <Typography variant="subtitle1" style={{ marginTop: 5 }}>
                     File selected: {state.fileName}
                 </Typography>
             )}
@@ -135,7 +135,7 @@ export const UploadFile = ({ state, updateData, setState, loading }) => {
 };
 
 export const DatasetContent = ({ state, renderColumnOptions, handleChangePage, handleChangeRowsPerPage }) => (
-    <TableContainer component={Paper} sx={{ maxHeight: 400, overflow: 'auto' }}>
+    <TableContainer component={Paper} sx={{ maxHeight: 327, overflow: 'auto' }}>
         <Table stickyHeader aria-label="sticky table">
             <TableHead>
                 <TableRow>

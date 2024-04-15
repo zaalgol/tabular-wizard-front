@@ -94,7 +94,7 @@ const Inference = () => {
 
     // Add custom styling here
     const containerStyles = {
-        marginTop: '16px', // Adjust the top margin
+        marginTop: '4px', // Adjust the top margin
         marginRight: '16px', // Adjust the right margin
     };
 
@@ -104,7 +104,7 @@ const Inference = () => {
 
 
     return (
-        <Box sx={{ p: 4 }}>
+        <Box sx={{ p: 1 }}>
             <Container maxWidth={false} sx={containerStyles}>
                 <TitleView titleText="Inference"></TitleView>
                 <Grid container spacing={3}>
@@ -128,7 +128,7 @@ const Inference = () => {
                     <Grid item xs={12}>
                         <Grid container justifyContent="center" sx={{ mt: 5 }}>
                             <Grid item xs={12} md={8} lg={6}>
-                                <Paper elevation={3} sx={{ maxHeight: 400, overflow: 'auto', p: 2 }}>
+                                <Paper elevation={3} sx={{ maxHeight: 255, overflow: 'auto', p: 2 }}>
                                     <Typography variant="h6" gutterBottom>
                                         Model: {modelName}
                                     </Typography>
@@ -184,9 +184,12 @@ const Inference = () => {
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Box sx={{ p: 4 }}>
+                    <Box sx={{ p: 1 }}>
                         <Container maxWidth={false} sx={containerStyles}>
                             {state.datasetError && <div>{state.datasetError}</div>}
+                            <Grid container spacing={1}>
+                                {/* ... */}
+                            </Grid>
                         </Container>
                     </Box>
                     <Grid item xs={12}>
