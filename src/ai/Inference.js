@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
-import makeRequest from '../api'
+import { handleMakeRequest } from '../app/RequestNavigator';
+import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { List, ListItem, ListItemText, Paper, Typography } from '@mui/material'
 import { ModelNameInput, DescriptionInput, TargetColumnSelect, ModelTypeRadioGroup, TrainingSpeedRadioGroup, UploadFile, DatasetContent, TitleView }
@@ -13,9 +14,9 @@ import {
 import { LoadingButton } from '@mui/lab';
 
 
-const getModelDetails = async (modelName) => {
+const getModelDetails = async (navigate, modelName) => {
     try {
-        const response = await makeRequest(`/api/model?model_name=${modelName}`, 'GET', null, {}, true);
+        const response = await handleMakeRequest(navigate,`/api/model?model_name=${modelName}`, 'GET', null, {}, true);
         if (response.status !== 200) {
             throw new Error('Server responded with an error!');
         }
@@ -29,6 +30,7 @@ const getModelDetails = async (modelName) => {
 const Inference = () => {
     const [searchParams] = useSearchParams();
     const modelName = searchParams.get('model');
+    const navigate = useNavigate();
 
     const [state, setState] = useState({
         columns: [],
@@ -52,7 +54,7 @@ const Inference = () => {
     useEffect(() => {
         const fetchData = async () => {
             validateDataset();
-            const response = await getModelDetails(modelName);
+            const response = await getModelDetails(navigate, modelName);
             const modelData = response.data.model;
             setState(prev => ({ ...prev, model: modelData }));
             console.log(modelData);
@@ -83,7 +85,7 @@ const Inference = () => {
                 fileName: state.fileName
             };
 
-            const response = await makeRequest('/api/inference/', 'POST', payload, {}, true);
+            const response = await handleMakeRequest(navigate,'/api/inference/', 'POST', payload, {}, true);
             console.log(response.data);
         } catch (error) {
             console.error('Error submitting the data:', error);

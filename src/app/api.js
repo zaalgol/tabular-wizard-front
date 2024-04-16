@@ -1,5 +1,5 @@
 import axios from 'axios';
-import appConfig from './config/config.json';
+import appConfig from '../config/config.json';
 
 /**
  * Make an HTTP request using axios with optional token authentication and credentials.

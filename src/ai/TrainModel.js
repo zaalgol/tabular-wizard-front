@@ -5,7 +5,8 @@ import {
     FormControl, InputLabel, Box
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import makeRequest from '../api';
+import { handleMakeRequest } from '../app/RequestNavigator';
+import { useNavigate } from 'react-router-dom';
 
 import {
     ModelNameInput, DescriptionInput, TargetColumnSelect,
@@ -37,6 +38,8 @@ function TrainModel() {
         fileName: '',
         fileSize: 0,
     });
+
+    const navigate = useNavigate();
 
     const validateDataset = () => {
         if (state.data.length <= 1) {
@@ -142,7 +145,7 @@ function TrainModel() {
             };
 
             // Send the data to the server
-            const response = await makeRequest('/api/trainModel/', 'POST', payload, {}, true); // Adjust the endpoint as necessary
+            const response = await handleMakeRequest(navigate,'/api/trainModel/', 'POST', payload, {}, true); // Adjust the endpoint as necessary
             console.log(response.data); // Handle the response as needed
         } catch (error) {
             console.error('Error submitting the data:', error);

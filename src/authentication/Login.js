@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { TextField, Button, Container, Box, Typography, CssBaseline } from '@mui/material';
 import './Login.css';
-import makeRequest from '../api'
-
+import { handleMakeRequest } from '../app/RequestNavigator';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -15,7 +14,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await makeRequest('/api/login/', 'POST', { email, password }, {}, false, false)
+      const response = await handleMakeRequest(navigate,'/api/login/', 'POST', { email, password }, {}, false, false)
       
       if (response.status === 200) {
         setIsAuthenticated(true);

@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, IconButton, Dialog, DialogActions, DialogTitle, Button, TextField } from '@mui/material';
+import {
+  Grid,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  Button,
+  TextField,
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import { DataGrid } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
-import makeRequest from '../api';
-
-
-
-
-const getUserModels = async () => {
-  try {
-    const response = await makeRequest('/api/userModels/', 'GET', null, {}, true);
-    if (response.status !== 200) {
-      throw new Error('Server responded with an error!');
-    }
-    return response;
-  } catch (error) {
-    console.error("Failed to fetch AI models: ", error);
-    return [];
-  }
-};
+import { handleMakeRequest } from '../app/RequestNavigator';
 
 const UserModels = () => {
   const [tableData, setTableData] = useState([]);
@@ -31,20 +23,24 @@ const UserModels = () => {
   const [currentModel, setCurrentModel] = useState({});
   const navigate = useNavigate();
 
+
   useEffect(() => {
     const fetchData = async () => {
-      const response = await getUserModels();
-      const modelsArray = response.data.models;
-      setTableData(modelsArray);
-      console.log(tableData)
+      try {
+        const response = await handleMakeRequest(navigate, '/api/userModels/', 'GET', null, {}, true);
+        const modelsArray = response.data.models;
+        setTableData(modelsArray);
+      } catch (error) {
+        console.error('Failed to fetch AI models: ', error);
+      }
     };
 
     fetchData();
-  }, []);  // added [] to avoid infinety rerendering
+  }, [navigate]);
 
   const handleDelete = (id) => {
     setTableData(tableData.filter((item) => item.id !== id));
-    setDeleteDialogOpen(false); // Close the dialog after deletion
+    setDeleteDialogOpen(false);
   };
 
   const handleEditDescription = (id, newDescription) => {
@@ -55,7 +51,7 @@ const UserModels = () => {
       return item;
     });
     setTableData(updatedData);
-    setEditDialogOpen(false); // Close the edit dialog after saving
+    setEditDialogOpen(false);
   };
 
   const openDeleteDialog = (model) => {
@@ -106,7 +102,7 @@ const UserModels = () => {
             columns={columns}
             sx={{
               '& .MuiDataGrid-columnHeaderTitle': {
-                fontWeight: 'bold', // Make the header font bold
+                fontWeight: 'bold',
               },
             }}
           />

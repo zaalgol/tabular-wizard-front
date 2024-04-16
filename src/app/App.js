@@ -4,7 +4,8 @@ import { AuthProvider } from '../authentication/AuthContext';
 import Routers from '../app/Routers';
 import Header from './Header';
 import { WebSocketProvider } from './WebSocketContext';
-import Notifications from './Notifications ';
+import Notifications from './Notifications';
+// import RequestNavigator from './RequestNavigator';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Header />
           <Notifications />
           <Routers />
+          {/* <RequestNavigator /> */}
         </Router>
       </AuthProvider>
     </WebSocketProvider>
@@ -21,4 +23,3 @@ function App() {
 }
 
 export default App;
-

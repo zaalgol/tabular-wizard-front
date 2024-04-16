@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import makeRequest from '../api'
+import { handleMakeRequest } from '../app/RequestNavigator';
+import { useNavigate } from 'react-router-dom';
 
 function MainPage() {
   const [content, setContent] = useState("");
@@ -12,7 +12,7 @@ function MainPage() {
     const fetchContent = async () => {
       if (token) {
         try {
-          const response = await makeRequest('/', 'GET', null, {}, true)
+          const response = await handleMakeRequest(navigate,'/', 'GET', null, {}, true)
           setContent(response.data);
         } catch (error) {
           // If the token is invalid, navigate to login
