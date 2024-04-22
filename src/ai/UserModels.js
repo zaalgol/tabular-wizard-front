@@ -65,9 +65,9 @@ const UserModels = () => {
   };
 
   const columns = [
-    { field: 'id', headerName: 'Name' },
+    { field: 'id', headerName: 'Name', width: 200 },
     { field: 'description', headerName: 'Description', width: 300 },
-    { field: 'created_at', headerName: 'Created At', width: 200 },
+    { field: 'created_at', headerName: 'Created At', width: 300 },
     {
       field: 'actions',
       headerName: 'Actions',

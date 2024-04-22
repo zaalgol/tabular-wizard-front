@@ -92,6 +92,14 @@ function TrainModel() {
         }));
     }
 
+    const handleRemoveFile = (fileInputRef) => {
+        // Ensure that the function can be called with fileInputRef as a parameter
+        if (fileInputRef && fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+        setState(prev => ({ ...prev, fileName: '', fileSize: 0, data: [], columns: [], columnOptions: {} }));
+    };
+
     const handleOptionChange = (colIndex, event) => {
         setState(prev => ({
             ...prev,
@@ -107,12 +115,17 @@ function TrainModel() {
         validateModelName();
         validateModelType();
         validateTargetColumn();
-        const initialOptions = state.columns.reduce((options, _, colIndex) => ({
-            ...options,
-            [colIndex]: 'raw',
-        }), {});
-        setState(prev => ({ ...prev, columnOptions: initialOptions }));
-    }, [state.data, state.modelName, state.modelType, state.columns, state.targetColumn]);
+    
+        if (state.fileName === '') {
+            setState(prev => ({ ...prev, columns: [], columnOptions: {} }));
+        } else {
+            const initialOptions = state.columns.reduce((options, _, colIndex) => ({
+                ...options,
+                [colIndex]: 'raw',
+            }), {});
+            setState(prev => ({ ...prev, columnOptions: initialOptions }));
+        }
+    }, [state.data, state.modelName, state.modelType, state.columns, state.targetColumn, state.fileName]);
 
 
     const handleChangeRowsPerPage = (event) => {
@@ -210,6 +223,7 @@ function TrainModel() {
                         <UploadFile
                             state={state}
                             updateData={updateData}
+                            handleRemoveFile={handleRemoveFile}
                             setState={setState}
                             loading={state.isLoading}
                         >

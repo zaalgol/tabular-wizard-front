@@ -16,7 +16,7 @@ import { LoadingButton } from '@mui/lab';
 
 const getModelDetails = async (navigate, modelName) => {
     try {
-        const response = await handleMakeRequest(navigate,`/api/model?model_name=${modelName}`, 'GET', null, {}, true);
+        const response = await handleMakeRequest(navigate, `/api/model?model_name=${modelName}`, 'GET', null, {}, true);
         if (response.status !== 200) {
             throw new Error('Server responded with an error!');
         }
@@ -54,14 +54,18 @@ const Inference = () => {
     useEffect(() => {
         const fetchData = async () => {
             validateDataset();
-            const response = await getModelDetails(navigate, modelName);
-            const modelData = response.data.model;
-            setState(prev => ({ ...prev, model: modelData }));
-            console.log(modelData);
+            // if (state.fileName === '') {
+            //     setState(prev => ({ ...prev, columns: [], columnOptions: {} }));
+            // } else {
+                const response = await getModelDetails(navigate, modelName);
+                const modelData = response.data.model;
+                setState(prev => ({ ...prev, model: modelData }));
+                console.log(modelData);
+            //}
         };
 
         fetchData();
-    }, [state.datasetError, state.data]);
+    }, [state.datasetError, state.data, state.fileName]);
 
     function updateData(jsonData) {
         setState(prev => ({
@@ -71,6 +75,14 @@ const Inference = () => {
             isLoading: false,
         }));
     }
+
+    const handleRemoveFile = (fileInputRef) => {
+        // Ensure that the function can be called with fileInputRef as a parameter
+        if (fileInputRef && fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+        setState(prev => ({ ...prev, fileName: '', fileSize: 0, data: [] }));
+    };
 
     const handleSubmit = async () => {
         setState(prev => ({ ...prev, isSubmitting: true }));
@@ -85,7 +97,7 @@ const Inference = () => {
                 fileName: state.fileName
             };
 
-            const response = await handleMakeRequest(navigate,'/api/inference/', 'POST', payload, {}, true);
+            const response = await handleMakeRequest(navigate, '/api/inference/', 'POST', payload, {}, true);
             console.log(response.data);
         } catch (error) {
             console.error('Error submitting the data:', error);
@@ -124,6 +136,7 @@ const Inference = () => {
                         <UploadFile loading={state.isLoading}
                             state={state}
                             updateData={updateData}
+                            handleRemoveFile={handleRemoveFile}
                             setState={setState}
                         />
                     </Grid>
@@ -199,7 +212,7 @@ const Inference = () => {
                             variant="contained"
                             color="primary"
                             onClick={handleSubmit}
-                            disabled={state.datasetError}
+                            disabled={!!state.datasetError} 
                         >
                             Inference
                         </LoadingButton>

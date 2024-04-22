@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-    Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TextField, Button, Select, MenuItem,
+    Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TextField, IconButton, Select, MenuItem,
     FormControl, Radio, RadioGroup, InputLabel, FormControlLabel, Typography, TablePagination
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { LoadingButton } from '@mui/lab'
 import * as XLSX from 'xlsx';
 // View title
@@ -79,15 +80,14 @@ export const TrainingSpeedRadioGroup = ({ value, onChange, readOnly = false }) =
     </FormControl>
 );
 
-export const UploadFile = ({ state, updateData, setState, loading }) => {
-    // const [loading, setLoading] = useState(false);
-    // const [fileInfo, setFileInfo] = useState({ fileName: '', fileSize: 0 });
+export const UploadFile = ({ state, updateData, setState, loading, handleRemoveFile }) => {
+    const fileInputRef = React.createRef();
 
     const handleFileChange = (e) => {
         const files = e.target.files;
         if (files && files[0]) {
             const file = files[0];
-            setState(prev => ({ ...prev, isLoading: true}));
+            setState(prev => ({ ...prev, isLoading: true }));
             setState(prev => ({ ...prev, fileName: file.name, fileSize: file.size }));
 
             const reader = new FileReader();
@@ -96,7 +96,9 @@ export const UploadFile = ({ state, updateData, setState, loading }) => {
                 const wb = XLSX.read(bstr, { type: 'binary' });
                 const wsname = wb.SheetNames[0];
                 const ws = wb.Sheets[wsname];
-                const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+                const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" }).map(row =>
+                    row.map(cell => typeof cell === 'string' ? cell.trim() : cell)
+                );
                 if (jsonData.length > 0) {
                     updateData(jsonData);
                 }
@@ -119,6 +121,7 @@ export const UploadFile = ({ state, updateData, setState, loading }) => {
             >
                 Upload File
                 <input
+                    ref={fileInputRef}
                     type="file"
                     hidden
                     accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -126,9 +129,14 @@ export const UploadFile = ({ state, updateData, setState, loading }) => {
                 />
             </LoadingButton>
             {state.fileName && (
-                <Typography variant="subtitle1" style={{ marginTop: 5 }}>
-                    File selected: {state.fileName}
-                </Typography>
+                <div style={{ marginTop: 5, display: 'flex', alignItems: 'center' }}>
+                    <Typography variant="subtitle1">
+                        File selected: {state.fileName}
+                    </Typography>
+                    <IconButton onClick={() => handleRemoveFile(fileInputRef)} aria-label="delete">
+                        <DeleteIcon />
+                    </IconButton>
+                </div>
             )}
         </div>
     );
