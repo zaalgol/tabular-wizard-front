@@ -4,7 +4,7 @@ import { handleMakeRequest } from '../app/RequestNavigator';
 import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { List, ListItem, ListItemText, Paper, Typography } from '@mui/material'
-import { ModelNameInput, DescriptionInput, TargetColumnSelect, ModelTypeRadioGroup, TrainingSpeedRadioGroup, UploadFile, DatasetContent, TitleView }
+import { ModelNameInput, DescriptionInput, TargetColumnSelect, ModelTypeRadioGroup, TrainingSpeedRadioGroup, ModelEnsembleRadioGroup, UploadFile, DatasetContent, TitleView }
     from './ModelFormComponents';
 import * as XLSX from 'xlsx';
 import {
@@ -192,6 +192,21 @@ const Inference = () => {
                                             model: {
                                                 ...prev.model,
                                                 training_speed: event.target.value,
+                                            },
+                                        }))
+                                    }
+                                />
+                            </Grid>
+                            <Grid item>
+                                <ModelEnsembleRadioGroup
+                                    readOnly={true}
+                                    value={state.model.ensemble || ''}
+                                    onChange={(event) =>
+                                        setState((prev) => ({
+                                            ...prev,
+                                            model: {
+                                                ...prev.model,
+                                                ensemble: event.target.value,
                                             },
                                         }))
                                     }

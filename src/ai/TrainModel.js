@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 
 import {
     ModelNameInput, DescriptionInput, TargetColumnSelect,
-    ModelTypeRadioGroup, TrainingSpeedRadioGroup, UploadFile, DatasetContent, TitleView
+    ModelTypeRadioGroup, TrainingSpeedRadioGroup, ModelEnsembleRadioGroup, UploadFile, DatasetContent, TitleView
 } from './ModelFormComponents';
 
 const ROWS_PER_PAGE = 5; // Set the number of rows per page
@@ -26,6 +26,7 @@ function TrainModel() {
         targetColumn: '',
         modelType: '',
         trainingSpeed: 'fast',
+        modelEnsemble: 'multi',
         columnOptions: {},
         currentPage: 1,
         rowsPerPage: ROWS_PER_PAGE,
@@ -149,12 +150,13 @@ function TrainModel() {
 
             // Prepare the payload
             const payload = {
-                modelName: state.modelName, // Access using state.modelName
-                description: state.description, // Use state.description
+                modelName: state.modelName,
+                description: state.description,
                 dataset: [filteredHeaders, ...filteredRows],
-                targetColumn: state.targetColumn, // Use state.targetColumn
-                modelType: state.modelType, // Use state.modelType
-                trainingSpeed: state.trainingSpeed, // Use state.trainingSpeed
+                targetColumn: state.targetColumn,
+                modelType: state.modelType,
+                trainingSpeed: state.trainingSpeed, 
+                ensemble: state.modelEnsemble, 
             };
 
             // Send the data to the server
@@ -256,6 +258,12 @@ function TrainModel() {
                             <Grid item>
                                 <TrainingSpeedRadioGroup
                                     value={state.trainingSpeed}
+                                    onChange={handleInputChange}
+                                />
+                            </Grid>
+                            <Grid item>
+                                <ModelEnsembleRadioGroup
+                                    value={state.modelEnsemble}
                                     onChange={handleInputChange}
                                 />
                             </Grid>

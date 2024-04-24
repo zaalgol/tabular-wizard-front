@@ -80,6 +80,16 @@ export const TrainingSpeedRadioGroup = ({ value, onChange, readOnly = false }) =
     </FormControl>
 );
 
+// Model Ensemble Radio Group
+export const ModelEnsembleRadioGroup = ({ value, onChange, readOnly = false }) => (
+    <FormControl component="fieldset">
+        <RadioGroup row aria-label="model-ensemble" name="modelEnsemble" value={value} onChange={onChange}>
+            <FormControlLabel value="single" control={<Radio />} label="Single Model" disabled={readOnly} />
+            <FormControlLabel value="multi" control={<Radio />} label="Multi Models" disabled={readOnly} />
+        </RadioGroup>
+    </FormControl>
+);
+
 export const UploadFile = ({ state, updateData, setState, loading, handleRemoveFile }) => {
     const fileInputRef = React.createRef();
 
