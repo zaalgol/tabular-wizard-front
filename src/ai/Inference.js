@@ -47,9 +47,24 @@ const Inference = () => {
         if (state.data.length === 0) {
             setState(prev => ({ ...prev, datasetError: 'Please upload a dataset file.' }));
         } else {
-            setState(prev => ({ ...prev, datasetError: '' }));
-        }
+            const { columns, target_column } = state.model;
+            const dataColumns = state.data[0];
+
+            // Filter out the target column from columns
+            const requiredColumns = columns.filter(column => column !== target_column);
+
+            // Check if all required columns are present in jsonData[0]
+            const containsAllColumns = requiredColumns.every(column => dataColumns.includes(column));
+            if (containsAllColumns) {
+                setState(prev => ({ ...prev, datasetError: '' }));
+            } else {
+                setState(prev => ({ ...prev, datasetError: "Dataset doesn't contains all model columns" }));
+            }
+            
+        } 
+    
     };
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -60,7 +75,7 @@ const Inference = () => {
                 const response = await getModelDetails(navigate, modelName);
                 const modelData = response.data.model;
                 setState(prev => ({ ...prev, model: modelData }));
-                console.log(modelData);
+                // console.log(modelData);
             //}
         };
 
@@ -146,6 +161,9 @@ const Inference = () => {
                                 <Paper elevation={3} sx={{ maxHeight: 255, overflow: 'auto', p: 2 }}>
                                     <Typography variant="h6" gutterBottom>
                                         Model: {modelName}
+                                    </Typography>
+                                    <Typography variant="h6" gutterBottom>
+                                        Target column: {state.model.target_column}
                                     </Typography>
                                     <List>
                                         {state.model.columns &&
