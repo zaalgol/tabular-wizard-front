@@ -8,7 +8,7 @@ import { handleMakeRequest } from '../app/RequestNavigator';
 import { useNavigate } from 'react-router-dom';
 
 import {
-    ModelNameInput, DescriptionInput, TargetColumnSelect,
+    ModelNameInput, DescriptionInput, TargetColumnSelect, MetricSelect,
     ModelTypeRadioGroup, TrainingSpeedRadioGroup, ModelEnsembleRadioGroup, UploadFile, DatasetContent, TitleView
 } from './ModelFormComponents';
 
@@ -37,12 +37,13 @@ function TrainModel() {
         targetColumnError: '',
         fileName: '',
         fileSize: 0,
+        metric: ''
     });
 
+    const metricsRegressionOptions = {'rmse': 'rmse', 'mae': 'mae'};
+    const metricsclassificationOptions = {'accuracy': 'accuracy', 'r2': 'r2'};
+
     const navigate = useNavigate();
-
-   
-
 
     const isValidSubmission = () => {
         return !state.datasetError  && !state.modelNameError && !state.modelTypeError && !state.targetColumnError;
@@ -50,7 +51,15 @@ function TrainModel() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setState(prev => ({ ...prev, [name]: value }));
+        setState(prev => {
+            // Set default metrics when model type changes
+            if (name === "modelType") {
+                const defaultMetric = value === "regression" ? "rmse" : value === "classification" ? "accuracy" : "";
+                return { ...prev, [name]: value, metric: defaultMetric };
+            } else {
+                return { ...prev, [name]: value };
+            }
+        });
     };
 
     function updateData(jsonData) {
@@ -112,7 +121,7 @@ function TrainModel() {
                 setState(prev => ({ ...prev, targetColumnError: '' }));
             }
         };
-        
+
         validateDataset();
         validateModelName();
         validateModelType();
@@ -131,6 +140,13 @@ function TrainModel() {
             setState(prev => ({ ...prev, columnOptions: initialOptions }));
         }
     }, [state.columns, state.fileName]);
+
+    // Use effect to update the MetricSelect based on model type
+    useEffect(() => {
+        // Set the default metric based on the initial or updated model type
+        const defaultMetric = state.modelType === "regression" ? "rmse" : state.modelType === "classification" ? "accuracy" : "";
+        setState(prev => ({ ...prev, metric: defaultMetric }));
+    }, [state.modelType]);
 
 
     const handleChangeRowsPerPage = (event) => {
@@ -272,6 +288,13 @@ function TrainModel() {
                             <Grid item>
                                 <ModelEnsembleRadioGroup
                                     value={state.modelEnsemble}
+                                    onChange={handleInputChange}
+                                />
+                            </Grid>
+                            <Grid item xs={2}>
+                                <MetricSelect
+                                    metrics={state.modelType === "regression" ? metricsRegressionOptions : state.modelType === "classification" ? metricsclassificationOptions : {}}
+                                    value={state.metric}
                                     onChange={handleInputChange}
                                 />
                             </Grid>

@@ -60,6 +60,27 @@ export const TargetColumnSelect = ({ columns, value, onChange, readOnly = false 
     </FormControl>
 );
 
+// Target Column Select
+export const MetricSelect = ({ metrics, value, onChange, readOnly = false }) => (
+    <FormControl fullWidth>
+        <InputLabel id="target-column-label">Metric</InputLabel>
+        <Select
+            name="metric"
+            labelId="metric-select-label"
+            id="metric-select"
+            value={value}
+            label="Metric"
+            onChange={onChange}
+            readOnly={readOnly}
+        >
+           {Object.keys(metrics).map((key) => (
+                <MenuItem key={key} value={key}>{metrics[key]}</MenuItem>
+            ))}
+        </Select>
+    </FormControl>
+);
+
+
 // Model Type Radio Group
 export const ModelTypeRadioGroup = ({ value, onChange, readOnly = false }) => (
     <FormControl component="fieldset">
@@ -99,7 +120,7 @@ export const UploadFile = ({ state, updateData, setState, loading, handleRemoveF
             const file = files[0];
             setState(prev => ({ ...prev, isLoading: true }));
             setState(prev => ({ ...prev, fileName: file.name, fileSize: file.size }));
-
+    
             const reader = new FileReader();
             reader.onload = (evt) => {
                 const bstr = evt.target.result;
@@ -109,9 +130,19 @@ export const UploadFile = ({ state, updateData, setState, loading, handleRemoveF
                 const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" }).map(row =>
                     row.map(cell => typeof cell === 'string' ? cell.trim() : cell)
                 );
+                
                 if (jsonData.length > 0) {
-                    updateData(jsonData);
+                    // Filter out columns without headers (empty strings) from the first row
+                    const headers = jsonData[0];
+                    const validIndexes = headers.map((header, index) => header ? index : null).filter(index => index != null);
+                    const filteredData = jsonData.map(row => 
+                        row.filter((_, index) => validIndexes.includes(index))
+                    );
+                    
+                    // Update state with filtered data
+                    updateData(filteredData);
                 }
+    
                 setState(prev => ({ ...prev, isLoading: false }));
             };
             reader.onerror = () => {
@@ -121,6 +152,7 @@ export const UploadFile = ({ state, updateData, setState, loading, handleRemoveF
             reader.readAsBinaryString(file);
         }
     };
+    
 
     return (
         <div>
