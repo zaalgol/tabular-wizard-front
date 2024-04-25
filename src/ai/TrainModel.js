@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import * as XLSX from 'xlsx';
 import {
     Container, Grid, Select, MenuItem,
     FormControl, InputLabel, Box
@@ -42,37 +41,7 @@ function TrainModel() {
 
     const navigate = useNavigate();
 
-    const validateDataset = () => {
-        if (state.data.length <= 1) {
-            setState(prev => ({ ...prev, datasetError: 'Please upload a dataset file.' }));
-        } else {
-            setState(prev => ({ ...prev, datasetError: '' }));
-        }
-    };
-
-    const validateModelName = () => {
-        if (state.modelName.trim() === '') {
-            setState(prev => ({ ...prev, modelNameError: 'Please enter a model name.' }));
-        } else {
-            setState(prev => ({ ...prev, modelNameError: '' }));
-        }
-    };
-
-    const validateModelType = () => {
-        if (state.modelType.trim() === '') {
-            setState(prev => ({ ...prev, modelTypeError: 'Please select a model type.' }));
-        } else {
-            setState(prev => ({ ...prev, modelTypeError: '' }));
-        }
-    };
-
-    const validateTargetColumn = () => {
-        if (state.data.length > 1 && state.targetColumn.trim() === '') {
-            setState(prev => ({ ...prev, targetColumnError: 'Please select a target column.' }));
-        } else {
-            setState(prev => ({ ...prev, targetColumnError: '' }));
-        }
-    };
+   
 
 
     const isValidSubmission = () => {
@@ -112,11 +81,46 @@ function TrainModel() {
     };
 
     useEffect(() => {
+        const validateDataset = () => {
+            if (state.data.length <= 1) {
+                setState(prev => ({ ...prev, datasetError: 'Please upload a dataset file.' }));
+            } else {
+                setState(prev => ({ ...prev, datasetError: '' }));
+            }
+        };
+    
+        const validateModelName = () => {
+            if (state.modelName.trim() === '') {
+                setState(prev => ({ ...prev, modelNameError: 'Please enter a model name.' }));
+            } else {
+                setState(prev => ({ ...prev, modelNameError: '' }));
+            }
+        };
+    
+        const validateModelType = () => {
+            if (state.modelType.trim() === '') {
+                setState(prev => ({ ...prev, modelTypeError: 'Please select a model type.' }));
+            } else {
+                setState(prev => ({ ...prev, modelTypeError: '' }));
+            }
+        };
+    
+        const validateTargetColumn = () => {
+            if (state.data.length > 1 && state.targetColumn.trim() === '') {
+                setState(prev => ({ ...prev, targetColumnError: 'Please select a target column.' }));
+            } else {
+                setState(prev => ({ ...prev, targetColumnError: '' }));
+            }
+        };
+        
         validateDataset();
         validateModelName();
         validateModelType();
         validateTargetColumn();
+    }, [state.data, state.modelName, state.modelType, state.targetColumn]);
     
+    useEffect(() => {
+        // Handle column options reset on file name change
         if (state.fileName === '') {
             setState(prev => ({ ...prev, columns: [], columnOptions: {} }));
         } else {
@@ -126,7 +130,7 @@ function TrainModel() {
             }), {});
             setState(prev => ({ ...prev, columnOptions: initialOptions }));
         }
-    }, [state.data, state.modelName, state.modelType, state.columns, state.targetColumn, state.fileName]);
+    }, [state.columns, state.fileName]);
 
 
     const handleChangeRowsPerPage = (event) => {
@@ -135,6 +139,10 @@ function TrainModel() {
             rowsPerPage: parseInt(event.target.value, 10),
             currentPage: INITIAL_PAGE,
         }));
+    };
+
+    const handleChangePage = (event, newPage) => {
+        setState(prev => ({ ...prev, currentPage: newPage + 1 })); // plus 1 because MUI uses zero-based index for pages
     };
 
     const handleSubmit = async () => {
@@ -150,8 +158,8 @@ function TrainModel() {
 
             // Prepare the payload
             const payload = {
-                modelName: state.modelName,
-                description: state.description,
+                modelName: state.modelName.trim(),
+                description: state.description.trim(),
                 dataset: [filteredHeaders, ...filteredRows],
                 targetColumn: state.targetColumn,
                 modelType: state.modelType,
@@ -235,7 +243,7 @@ function TrainModel() {
                         <DatasetContent
                             state={state}
                             renderColumnOptions={renderColumnOptions}
-                            handleChangePage={renderColumnOptions}
+                            handleChangePage={handleChangePage}
                             handleChangeRowsPerPage={handleChangeRowsPerPage}
                         >
                         </DatasetContent>
