@@ -23,7 +23,7 @@ const Header = () => {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" component="div" className="title">
-          React Login Demo
+          Tabular Wizard
         </Typography>
         <Link to="/trainModel" style={{ textDecoration: 'none', color: 'inherit' }}>
           <Button color="inherit">

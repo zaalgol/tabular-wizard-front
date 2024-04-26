@@ -28,7 +28,6 @@ const makeRequest = async (url, method, body = null, headers = {}, useToken = tr
     };
 
     // Make the request
-    console.log("&".repeat(500) + JSON.stringify(config))
     return await axios(config);
 
   } catch (error) {

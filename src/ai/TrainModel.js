@@ -8,13 +8,14 @@ import { handleMakeRequest } from '../app/RequestNavigator';
 import { useNavigate } from 'react-router-dom';
 
 import {
-    ModelNameInput, DescriptionInput, TargetColumnSelect, MetricSelect,
-    ModelTypeRadioGroup, TrainingSpeedRadioGroup, ModelEnsembleRadioGroup, UploadFile, DatasetContent, TitleView
+    ModelNameInput, DescriptionInput, TargetColumnSelect, MetricSelect, TrainingStrategySelect, SamplingStrategySelect,
+    ModelTypeRadioGroup, UploadFile, DatasetContent, TitleView
 } from './ModelFormComponents';
+
+import { trainingStrategyOptions, samplingStrategyOptions, metricsRegressionOptions, metricsclassificationOptions } from './consts'
 
 const ROWS_PER_PAGE = 5; // Set the number of rows per page
 const INITIAL_PAGE = 1;
-
 
 function TrainModel() {
     const [state, setState] = useState({
@@ -24,8 +25,8 @@ function TrainModel() {
         columns: [],
         targetColumn: '',
         modelType: '',
-        trainingSpeed: 'fast',
-        modelEnsemble: 'multi',
+        // trainingSpeed: 'fast',
+        // modelEnsemble: 'multi',
         columnOptions: {},
         currentPage: 1,
         rowsPerPage: ROWS_PER_PAGE,
@@ -37,16 +38,18 @@ function TrainModel() {
         targetColumnError: '',
         fileName: '',
         fileSize: 0,
-        metric: ''
+        metric: '',
+        trainingStrategy: 'ensembleModelsFast',
+        samplingStrategy: 'conditionalOversampling'
     });
 
-    const metricsRegressionOptions = {'rmse': 'rmse', 'mae': 'mae'};
-    const metricsclassificationOptions = {'accuracy': 'accuracy', 'r2': 'r2'};
+
+
 
     const navigate = useNavigate();
 
     const isValidSubmission = () => {
-        return !state.datasetError  && !state.modelNameError && !state.modelTypeError && !state.targetColumnError;
+        return !state.datasetError && !state.modelNameError && !state.modelTypeError && !state.targetColumnError;
     };
 
     const handleInputChange = (e) => {
@@ -97,7 +100,7 @@ function TrainModel() {
                 setState(prev => ({ ...prev, datasetError: '' }));
             }
         };
-    
+
         const validateModelName = () => {
             if (state.modelName.trim() === '') {
                 setState(prev => ({ ...prev, modelNameError: 'Please enter a model name.' }));
@@ -105,7 +108,7 @@ function TrainModel() {
                 setState(prev => ({ ...prev, modelNameError: '' }));
             }
         };
-    
+
         const validateModelType = () => {
             if (state.modelType.trim() === '') {
                 setState(prev => ({ ...prev, modelTypeError: 'Please select a model type.' }));
@@ -113,7 +116,7 @@ function TrainModel() {
                 setState(prev => ({ ...prev, modelTypeError: '' }));
             }
         };
-    
+
         const validateTargetColumn = () => {
             if (state.data.length > 1 && state.targetColumn.trim() === '') {
                 setState(prev => ({ ...prev, targetColumnError: 'Please select a target column.' }));
@@ -127,7 +130,7 @@ function TrainModel() {
         validateModelType();
         validateTargetColumn();
     }, [state.data, state.modelName, state.modelType, state.targetColumn]);
-    
+
     useEffect(() => {
         // Handle column options reset on file name change
         if (state.fileName === '') {
@@ -179,12 +182,13 @@ function TrainModel() {
                 dataset: [filteredHeaders, ...filteredRows],
                 targetColumn: state.targetColumn,
                 modelType: state.modelType,
-                trainingSpeed: state.trainingSpeed, 
-                ensemble: state.modelEnsemble, 
+                trainingStrategy: state.trainingStrategy,
+                samplingStrategy: state.samplingStrategy,
+                metric: state.metric,
             };
 
             // Send the data to the server
-            const response = await handleMakeRequest(navigate,'/api/trainModel/', 'POST', payload, {}, true); // Adjust the endpoint as necessary
+            const response = await handleMakeRequest(navigate, '/api/trainModel/', 'POST', payload, {}, true); // Adjust the endpoint as necessary
             console.log(response.data); // Handle the response as needed
         } catch (error) {
             console.error('Error submitting the data:', error);
@@ -279,7 +283,7 @@ function TrainModel() {
                                     onChange={handleInputChange}
                                 />
                             </Grid>
-                            <Grid item>
+                            {/* <Grid item>
                                 <TrainingSpeedRadioGroup
                                     value={state.trainingSpeed}
                                     onChange={handleInputChange}
@@ -290,14 +294,29 @@ function TrainModel() {
                                     value={state.modelEnsemble}
                                     onChange={handleInputChange}
                                 />
-                            </Grid>
+                            </Grid> */}
                             <Grid item xs={2}>
+                                <TrainingStrategySelect
+                                    trainingStrategies={trainingStrategyOptions}
+                                    value={state.trainingStrategy}
+                                    onChange={handleInputChange}
+                                />
+                            </Grid>
+                            {state.modelType === "classification" && <Grid item xs={2}>
+                                <SamplingStrategySelect
+                                    samplingStrategies={samplingStrategyOptions}
+                                    value={state.samplingStrategy}
+                                    onChange={handleInputChange}
+                                />
+                            </Grid>}
+                            { state.modelType && <Grid item xs={2}>
                                 <MetricSelect
                                     metrics={state.modelType === "regression" ? metricsRegressionOptions : state.modelType === "classification" ? metricsclassificationOptions : {}}
                                     value={state.metric}
                                     onChange={handleInputChange}
                                 />
-                            </Grid>
+                            </Grid>}
+
                         </Grid>
                     </Grid>
                     <Box sx={{ p: 1 }}>
@@ -317,7 +336,7 @@ function TrainModel() {
                             color="primary"
                             onClick={handleSubmit}
                             loading={state.isSubmitting}
-                        disabled={!isValidSubmission()}
+                            disabled={!isValidSubmission()}
                         >
                             Submit
                         </LoadingButton>

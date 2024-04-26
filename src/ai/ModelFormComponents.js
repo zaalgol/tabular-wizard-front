@@ -60,7 +60,7 @@ export const TargetColumnSelect = ({ columns, value, onChange, readOnly = false 
     </FormControl>
 );
 
-// Target Column Select
+// Metric Select
 export const MetricSelect = ({ metrics, value, onChange, readOnly = false }) => (
     <FormControl fullWidth>
         <InputLabel id="target-column-label">Metric</InputLabel>
@@ -75,6 +75,46 @@ export const MetricSelect = ({ metrics, value, onChange, readOnly = false }) => 
         >
            {Object.keys(metrics).map((key) => (
                 <MenuItem key={key} value={key}>{metrics[key]}</MenuItem>
+            ))}
+        </Select>
+    </FormControl>
+);
+
+// Training Strateg Select
+export const TrainingStrategySelect = ({ trainingStrategies, value, onChange, readOnly = false }) => (
+    <FormControl fullWidth>
+        <InputLabel id="training-strategy-label">Training Strategy</InputLabel>
+        <Select
+            name="trainingStrategy"
+            labelId="training-strategy-label"
+            id="training-strategy-select"
+            value={value}
+            label="Training Strategy"
+            onChange={onChange}
+            readOnly={readOnly}
+        >
+           {Object.keys(trainingStrategies).map((key) => (
+                <MenuItem key={key} value={key}>{trainingStrategies[key]}</MenuItem>
+            ))}
+        </Select>
+    </FormControl>
+);
+
+// Sampling Strateg Select
+export const SamplingStrategySelect = ({ samplingStrategies, value, onChange, readOnly = false }) => (
+    <FormControl fullWidth>
+        <InputLabel id="sampling-strategy-label">Sampling Strategy</InputLabel>
+        <Select
+            name="samplingStrategy"
+            labelId="sampling-strategy-label"
+            id="sampling-strategy-select"
+            value={value}
+            label="Sampling Strategy"
+            onChange={onChange}
+            readOnly={readOnly}
+        >
+           {Object.keys(samplingStrategies).map((key) => (
+                <MenuItem key={key} value={key}>{samplingStrategies[key]}</MenuItem>
             ))}
         </Select>
     </FormControl>

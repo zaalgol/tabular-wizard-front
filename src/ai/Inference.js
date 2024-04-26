@@ -4,7 +4,7 @@ import { handleMakeRequest } from '../app/RequestNavigator';
 import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { List, ListItem, ListItemText, Paper, Typography } from '@mui/material'
-import { ModelNameInput, DescriptionInput, TargetColumnSelect, ModelTypeRadioGroup, TrainingSpeedRadioGroup, ModelEnsembleRadioGroup, UploadFile, DatasetContent, TitleView }
+import { ModelNameInput, DescriptionInput, TargetColumnSelect, ModelTypeRadioGroup, TrainingStrategySelect, SamplingStrategySelect, UploadFile, MetricSelect, TitleView }
     from './ModelFormComponents';
 import * as XLSX from 'xlsx';
 import {
@@ -12,6 +12,7 @@ import {
     FormControl, InputLabel, Box
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import {trainingStrategyOptions, samplingStrategyOptions, metricsRegressionOptions, metricsclassificationOptions} from './consts' 
 
 
 const getModelDetails = async (navigate, modelName) => {
@@ -26,6 +27,21 @@ const getModelDetails = async (navigate, modelName) => {
         return [];
     }
 };
+
+
+
+// const trainingStrategyOptions = {
+//     'singleModelFast': 'Single Model Fast',
+//     'singleModelTuned': 'Single Model Tuned',
+//     'ensembleModelsFast': 'Ensemble Models Fast',
+//     'ensembleModelsTuned': 'ensemble Models Tuned'
+// };
+
+// const samplingStrategyOptions = {
+//     'oversampling': 'Oversampling',
+//     'dontOversample': 'Don\'t Oversample',
+//     'conditionalOversampling': 'Oversample if Major Class > 2x Minor Class'
+// }
 
 const Inference = () => {
     const [searchParams] = useSearchParams();
@@ -200,7 +216,7 @@ const Inference = () => {
                                     }
                                 />
                             </Grid>
-                            <Grid item>
+                            {/* <Grid item>
                                 <TrainingSpeedRadioGroup
                                     readOnly={true}
                                     value={state.model.training_speed || ''}
@@ -229,7 +245,55 @@ const Inference = () => {
                                         }))
                                     }
                                 />
+                            </Grid> */}
+                             <Grid item xs={2}>
+                                <TrainingStrategySelect
+                                    readOnly={true}
+                                    value={state.model.training_strategy || ''}
+                                    trainingStrategies={trainingStrategyOptions}
+                                    onChange={(event) =>
+                                        setState((prev) => ({
+                                            ...prev,
+                                            model: {
+                                                ...prev.model,
+                                                trainingStrategy: event.target.value,
+                                            },
+                                        }))
+                                    }
+                                />
                             </Grid>
+                            {state.model.model_type === "classification" && <Grid item xs={2}>
+                                <SamplingStrategySelect
+                                    readOnly={true}
+                                    value={state.model.sampling_strategy || ''}
+                                    samplingStrategies={samplingStrategyOptions}
+                                    onChange={(event) =>
+                                        setState((prev) => ({
+                                            ...prev,
+                                            model: {
+                                                ...prev.model,
+                                                ensemble: event.target.value,
+                                            },
+                                        }))
+                                    }
+                                />
+                            </Grid> }
+                            { state.model.model_type && <Grid item xs={2}>
+                                <MetricSelect
+                                    readOnly={true}
+                                    metrics={state.model.model_type === "regression" ? metricsRegressionOptions : state.model.model_type  === "classification" ? metricsclassificationOptions : {}}
+                                    value={state.model.metric || ''}
+                                    onChange={(event) =>
+                                        setState((prev) => ({
+                                            ...prev,
+                                            model: {
+                                                ...prev.model,
+                                                metric: event.target.value,
+                                            },
+                                        }))
+                                    }
+                                />
+                            </Grid> }
                         </Grid>
                     </Grid>
                     <Box sx={{ p: 1 }}>
