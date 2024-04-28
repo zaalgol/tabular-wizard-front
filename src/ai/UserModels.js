@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import DownloadIcon from '@mui/icons-material/Download';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import { DataGrid } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
@@ -66,9 +67,9 @@ const UserModels = () => {
   };
 
   const columns = [
-    { field: 'id', headerName: 'Name', width: 200 },
-    { field: 'description', headerName: 'Description', width: 300 },
-    { field: 'created_at', headerName: 'Created At', width: 300 },
+    { field: 'id', headerName: 'Name', width: 300 },
+    { field: 'description', headerName: 'Description', width: 400 },
+    { field: 'created_at', headerName: 'Created At', width: 280 },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -82,17 +83,25 @@ const UserModels = () => {
           <IconButton onClick={() => openDeleteDialog(params.row)}>
             <DeleteIcon />
           </IconButton>
+          <IconButton
+          onClick={async () => {
+            await handleMakeRequest(navigate, `/api/modelMetric?model_name=${params.row.id}`, 'GET', null, {}, true);
+          }}
+        >
+          <DownloadIcon />
+        </IconButton>
           <IconButton onClick={() => navigate(`/inference?model=${params.row.id}`)}>
             <PlayCircleOutlineIcon />
           </IconButton>
+          
         </>
       ),
     },
   ];
 
   return (
-    <Grid container justifyContent="center" sx={{ mt: 16 }}>
-      <Grid item xs={12} md={8} lg={6}>
+    <Grid container justifyContent="center" sx={{ mt: 18 }}>
+      <Grid item xs={12} md={8} lg={8}>
         <div style={{ height: 400, width: '100%' }}>
           <DataGrid
             initialState={{
