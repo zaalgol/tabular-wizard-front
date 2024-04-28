@@ -6,18 +6,26 @@ export const trainingStrategyOptions = {
 };
 
 export const samplingStrategyOptions = {
+    'conditionalOversampling': 'Oversample if Major Class > 2x Minor Class',
     'oversampling': 'Oversampling',
-    'dontOversample': 'Don\'t Oversample',
-    'conditionalOversampling': 'Oversample if Major Class > 2x Minor Class'
+    'dontOversample': 'Don\'t Oversample'
+    
 }
 
-export const metricsRegressionOptions = { 'rmse': 'rmse', 'mae': 'mae' };
+
+export const metricsRegressionOptions = {
+    'r2': 'R2 - R-squared (R2)',
+    'neg_root_mean_squared_error': 'RMSE - Root Mean Squared error',
+    'neg_mean_squared_error': 'MSE - Mean Squared Error',
+    'neg_mean_absolute_error': 'MAE - Mean Absolute Error',
+    'neg_mean_absolute_percentage_error': 'MAPE - Mean Absolute Percentage Error'
+};
 
 export const metricsclassificationOptions = {
     'accuracy': 'accuracy',
     'f1': 'f1',
-    'neg_log_loss': 'neg_log_loss',
-    'roc_auc': 'roc_auc',
+    'neg_log_loss': 'log loss',
+    'roc_auc': 'roc auc',
     'recall': 'recall',
     'precision': 'precision'
 };

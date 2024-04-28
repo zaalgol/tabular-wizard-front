@@ -38,9 +38,10 @@ const UserModels = () => {
     fetchData();
   }, [navigate]);
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     setTableData(tableData.filter((item) => item.id !== id));
     setDeleteDialogOpen(false);
+    await handleMakeRequest(navigate, `/api/model?model_name=${id}`, 'DELETE', null, {}, true);
   };
 
   const handleEditDescription = (id, newDescription) => {

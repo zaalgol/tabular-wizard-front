@@ -55,13 +55,14 @@ function TrainModel() {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setState(prev => {
-            // Set default metrics when model type changes
-            if (name === "modelType") {
-                const defaultMetric = value === "regression" ? "rmse" : value === "classification" ? "accuracy" : "";
-                return { ...prev, [name]: value, metric: defaultMetric };
-            } else {
-                return { ...prev, [name]: value };
-            }
+            return { ...prev, [name]: value };
+            // // Set default metrics when model type changes
+            // if (name === "modelType") {
+            //     const defaultMetric = value === "regression" ? "r2" : value === "classification" ? "accuracy" : "";
+            //     return { ...prev, [name]: value, metric: defaultMetric };
+            // } else {
+            //     return { ...prev, [name]: value };
+            // }
         });
     };
 
@@ -147,7 +148,7 @@ function TrainModel() {
     // Use effect to update the MetricSelect based on model type
     useEffect(() => {
         // Set the default metric based on the initial or updated model type
-        const defaultMetric = state.modelType === "regression" ? "rmse" : state.modelType === "classification" ? "accuracy" : "";
+        const defaultMetric = state.modelType === "regression" ? "r2" : state.modelType === "classification" ? "accuracy" : "";
         setState(prev => ({ ...prev, metric: defaultMetric }));
     }, [state.modelType]);
 
