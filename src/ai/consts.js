@@ -12,7 +12,6 @@ export const samplingStrategyOptions = {
     
 }
 
-
 export const metricsRegressionOptions = {
     'r2': 'R2 - R-squared (R2)',
     'neg_root_mean_squared_error': 'RMSE - Root Mean Squared error',

@@ -172,9 +172,9 @@ const Inference = () => {
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <Grid container justifyContent="center" sx={{ mt: 5 }}>
+                        <Grid container justifyContent="center" sx={{ mt: 4 }}>
                             <Grid item xs={12} md={8} lg={6}>
-                                <Paper elevation={3} sx={{ maxHeight: 255, overflow: 'auto', p: 2 }}>
+                                <Paper elevation={3} sx={{ maxHeight: 230, overflow: 'auto', p: 2 }}>
                                     <Typography variant="h6" gutterBottom>
                                         Model: {modelName}
                                     </Typography>

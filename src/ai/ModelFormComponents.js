@@ -73,7 +73,7 @@ export const MetricSelect = ({ metrics, value, onChange, readOnly = false }) => 
             onChange={onChange}
             readOnly={readOnly}
         >
-           {Object.keys(metrics).map((key) => (
+            {Object.keys(metrics).map((key) => (
                 <MenuItem key={key} value={key}>{metrics[key]}</MenuItem>
             ))}
         </Select>
@@ -93,7 +93,7 @@ export const TrainingStrategySelect = ({ trainingStrategies, value, onChange, re
             onChange={onChange}
             readOnly={readOnly}
         >
-           {Object.keys(trainingStrategies).map((key) => (
+            {Object.keys(trainingStrategies).map((key) => (
                 <MenuItem key={key} value={key}>{trainingStrategies[key]}</MenuItem>
             ))}
         </Select>
@@ -113,7 +113,7 @@ export const SamplingStrategySelect = ({ samplingStrategies, value, onChange, re
             onChange={onChange}
             readOnly={readOnly}
         >
-           {Object.keys(samplingStrategies).map((key) => (
+            {Object.keys(samplingStrategies).map((key) => (
                 <MenuItem key={key} value={key}>{samplingStrategies[key]}</MenuItem>
             ))}
         </Select>
@@ -160,29 +160,42 @@ export const UploadFile = ({ state, updateData, setState, loading, handleRemoveF
             const file = files[0];
             setState(prev => ({ ...prev, isLoading: true }));
             setState(prev => ({ ...prev, fileName: file.name, fileSize: file.size }));
-    
+
             const reader = new FileReader();
             reader.onload = (evt) => {
                 const bstr = evt.target.result;
-                const wb = XLSX.read(bstr, { type: 'binary' });
+                const wb = XLSX.read(bstr, {
+                    type: 'binary',
+                    cellDates: true,  // Continue to convert date serials to JS Date objects
+                    dateNF: 'yyyy-mm-dd'  // This sets the date format, but will now convert to string immediately after reading
+                });
                 const wsname = wb.SheetNames[0];
                 const ws = wb.Sheets[wsname];
                 const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" }).map(row =>
-                    row.map(cell => typeof cell === 'string' ? cell.trim() : cell)
+                    row.map(cell => {
+                        if (cell instanceof Date) {
+                            // Format the date as a string in the desired format
+                            return `${cell.getFullYear()}-${('0' + (cell.getMonth() + 1)).slice(-2)}-${('0' + cell.getDate()).slice(-2)}`;
+                        } else if (typeof cell === 'string') {
+                            return cell.trim();
+                        } else {
+                            return cell;
+                        }
+                    })
                 );
-                
+
                 if (jsonData.length > 0) {
                     // Filter out columns without headers (empty strings) from the first row
                     const headers = jsonData[0];
                     const validIndexes = headers.map((header, index) => header ? index : null).filter(index => index != null);
-                    const filteredData = jsonData.map(row => 
+                    const filteredData = jsonData.map(row =>
                         row.filter((_, index) => validIndexes.includes(index))
                     );
-                    
+
                     // Update state with filtered data
                     updateData(filteredData);
                 }
-    
+
                 setState(prev => ({ ...prev, isLoading: false }));
             };
             reader.onerror = () => {
@@ -190,9 +203,10 @@ export const UploadFile = ({ state, updateData, setState, loading, handleRemoveF
                 setState(prev => ({ ...prev, isLoading: false }));
             };
             reader.readAsBinaryString(file);
+
         }
     };
-    
+
 
     return (
         <div>
