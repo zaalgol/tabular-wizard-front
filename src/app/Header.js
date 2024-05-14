@@ -1,48 +1,34 @@
-import React, { useContext } from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import { AuthContext } from '../authentication/AuthContext';
-import useLogout from '../authentication/useLogout';
+import React from 'react';
 import { Link } from 'react-router-dom'; // Import the Link component
-import './Header.css'; // Import the CSS file here
+import './Header.css'; // Assuming you'll place your CSS rules here
+// import { TrainModelIcon, UserModelIcon } from './AppComponents';
+import {UserModelIcon} from '../icons/UserModelIcon'
+import {TrainModelIcon} from '../icons/TrainModelIcon'
+import {MenuIcon} from '../icons/MenuIcon'
 
-const Header = () => {
-  const { isAuthenticated } = useContext(AuthContext);
-  const logout = useLogout();
-
+function Header() {
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <IconButton
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          className="menu-button"
-        >
-          <MenuIcon />
-        </IconButton>
-        <Typography variant="h6" component="div" className="title">
-          Tabular Wizard
-        </Typography>
-        <Link to="/trainModel" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <Button color="inherit">
-            Train Model
-          </Button>
-        </Link>
-        <Link to="/userModels" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <Button color="inherit">
-            User Models
-          </Button>
-        </Link>
-        {isAuthenticated && (
-          <Button color="inherit" onClick={logout}>
-            Logout
-          </Button>
-        )}
-      </Toolbar>
-    </AppBar>
-  );
-};
+    <div className="header">
+      <div className="menu-icon">
+        <MenuIcon/>
+      </div>
+      <div className="title">Tabular Wizard</div>
 
+      <div className="controls">
+        <Link to="/trainModel" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+          <div className="button">
+            <TrainModelIcon />
+            <span>Train Model</span>
+          </div>
+        </Link>
+        <Link to="/userModels" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+          <div className="button">
+          <UserModelIcon/>
+            <span>User Models</span>
+          </div>
+        </Link>
+      </div>
+    </div>
+  );
+}
 export default Header;

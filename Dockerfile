@@ -5,7 +5,7 @@ FROM node:16
 WORKDIR /usr/src/app
 
 # Copy only the necessary files
-COPY package.json yarn.lock ./
+COPY package.json ./
 
 # Install any needed packages specified in package.json
 RUN npm install

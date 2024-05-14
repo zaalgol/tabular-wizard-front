@@ -1,16 +1,53 @@
-.app-bar {
-    flex-grow: 1;
-  }
+.header {
+  /* position: absolute;
+  left: 272px; */
+  position: fixed;
+  left: 272px;
+  right: 0;
+  z-index: 1000;
+
+
+  width: 1608px;
+  height: 70px;
+  top: 0;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E4E7EC;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px; /* Adjust as necessary */
   
-  .menu-button {
-    margin-right: 2em;
-  }
-  
-  .title {
-    flex-grow: 1;
-  }
-  
-  .header-toolbar {
-    display: flex;
-    justify-content: space-between;
-  }
+}
+
+.menu-icon {
+  /* Style your menu icon here */
+}
+
+.title {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  color: #262931;
+}
+
+.controls {
+  display: flex;
+  gap: 32px;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 30px;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  color: #282F3E;
+}
+
+.button span {
+  margin-left: 10px; /* Adjust icon spacing */
+}
