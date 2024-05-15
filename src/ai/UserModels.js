@@ -15,11 +15,9 @@ import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import { DataGrid } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
 import { handleMakeRequest } from '../app/RequestNavigator';
-import {TrainModelIcon} from '../icons/TrainModelIcon'
+import { ModelsGridIcon } from '../icons/ModelsGridIcon';
 
-import {
-    TitleView
-} from './ModelFormComponents';
+import { TitleView } from './ModelFormComponents';
 
 const UserModels = () => {
   const [tableData, setTableData] = useState([]);
@@ -28,7 +26,6 @@ const UserModels = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [currentModel, setCurrentModel] = useState({});
   const navigate = useNavigate();
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,25 +86,26 @@ const UserModels = () => {
             <DeleteIcon />
           </IconButton>
           <IconButton
-          onClick={async () => {
-            await handleMakeRequest(navigate, `/api/modelMetric?model_name=${params.row.id}`, 'GET', null, {}, true);
-          }}
-        >
-          <DownloadIcon />
-        </IconButton>
+            onClick={async () => {
+              await handleMakeRequest(navigate, `/api/modelMetric?model_name=${params.row.id}`, 'GET', null, {}, true);
+            }}
+          >
+            <DownloadIcon />
+          </IconButton>
           <IconButton onClick={() => navigate(`/inference?model=${params.row.id}`)}>
             <PlayCircleOutlineIcon />
           </IconButton>
-          
         </>
       ),
     },
   ];
 
   return (
-    <Grid container justifyContent="center" sx={{ mt: 18 }}>
-      {/* <TitleView titleText="User Models" IconComponent={TrainModelIcon} /> */}
-      <Grid item xs={12} md={8} lg={8}>
+    <Grid container justifyContent="center" sx={{ mt: 10 }}>
+      <Grid item xs={12} md={8} lg={10} sx={{ mb: 3 }}>
+        <TitleView titleText="User Models" IconComponent={ModelsGridIcon} />
+      </Grid>
+      <Grid item xs={12} md={10} lg={10} sx={{ width: '100%', pl: 3, pr: 3 }}>
         <div style={{ height: 400, width: '100%' }}>
           <DataGrid
             initialState={{

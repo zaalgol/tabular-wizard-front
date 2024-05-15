@@ -11,7 +11,6 @@
   border-bottom: 1px solid #E4E7EC;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Ensures spacing between title and controls */
   padding: 0 20px; /* Adjust as necessary */
 }
 
@@ -24,6 +23,7 @@
   font-weight: 600;
   font-size: 20px;
   color: #262931;
+  flex-grow: 1; /* Allow title to take up available space */
 }
 
 .controls {
@@ -43,6 +43,8 @@
   font-weight: 500;
   font-size: 18px;
   color: #282F3E;
+  background-color: #FFFFFF; /* Ensure background is white */
+  text-decoration: none; /* Remove underline from links */
 }
 
 .button span {

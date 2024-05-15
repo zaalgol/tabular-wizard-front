@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // Import the Link component
-import './Header.css'; // Assuming you'll place your CSS rules here
-import { UserModelIcon } from '../icons/UserModelIcon';
+import { Link } from 'react-router-dom';
+import './Header.css';
 import { TrainModelIcon } from '../icons/TrainModelIcon';
+import { ModelsGridIcon } from '../icons/ModelsGridIcon';
 import { MenuIcon } from '../icons/MenuIcon';
 
 function Header() {
@@ -13,17 +13,13 @@ function Header() {
       </div>
       <div className="title">Tabular Wizard</div>
       <div className="controls">
-        <Link to="/trainModel" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-          <div className="button">
-            <TrainModelIcon />
-            <span>Train Model</span>
-          </div>
+        <Link to="/trainModel" className="button">
+          <TrainModelIcon />
+          <span>Train Model</span>
         </Link>
-        <Link to="/userModels" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-          <div className="button">
-            <UserModelIcon />
-            <span>User Models</span>
-          </div>
+        <Link to="/userModels" className="button">
+          <ModelsGridIcon />
+          <span>User Models</span>
         </Link>
       </div>
     </div>
