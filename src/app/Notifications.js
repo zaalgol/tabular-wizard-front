@@ -26,6 +26,7 @@ const Notifications = () => {
         <Stack sx={{ width: '100%' }} spacing={2}>
             <Alert
                 variant="filled"
+                sx={{ bgcolor: '#1976D2' }}
                 severity="success"
                 action={
                     <Button 

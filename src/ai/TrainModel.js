@@ -3,9 +3,12 @@ import {
     Container, Grid, Select, MenuItem,
     FormControl, InputLabel, Box
 } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import { LoadingButton } from '@mui/lab';
 import { handleMakeRequest } from '../app/RequestNavigator';
 import { useNavigate } from 'react-router-dom';
+import { TrainModelIcon } from '../icons/TrainModelIcon'
 
 import {
     ModelNameInput, DescriptionInput, TargetColumnSelect, MetricSelect, TrainingStrategySelect, SamplingStrategySelect,
@@ -52,17 +55,12 @@ function TrainModel() {
         return !state.datasetError && !state.modelNameError && !state.modelTypeError && !state.targetColumnError;
     };
 
+
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setState(prev => {
             return { ...prev, [name]: value };
-            // // Set default metrics when model type changes
-            // if (name === "modelType") {
-            //     const defaultMetric = value === "regression" ? "r2" : value === "classification" ? "accuracy" : "";
-            //     return { ...prev, [name]: value, metric: defaultMetric };
-            // } else {
-            //     return { ...prev, [name]: value };
-            // }
         });
     };
 
@@ -234,8 +232,7 @@ function TrainModel() {
     return (
         <Box sx={{ p: 1 }}> {/* Use Box to provide padding around the entire component */}
             <Container maxWidth={false} sx={containerStyles}>
-                <TitleView titleText="Train Model">
-                </TitleView>
+                <TitleView titleText="Train Model" IconComponent={TrainModelIcon} />
                 <Grid container spacing={3}>
                     <Grid item xs={2} sx={gridItemStyles}>
                         <ModelNameInput
@@ -284,18 +281,6 @@ function TrainModel() {
                                     onChange={handleInputChange}
                                 />
                             </Grid>
-                            {/* <Grid item>
-                                <TrainingSpeedRadioGroup
-                                    value={state.trainingSpeed}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                            <Grid item>
-                                <ModelEnsembleRadioGroup
-                                    value={state.modelEnsemble}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid> */}
                             <Grid item xs={2}>
                                 <TrainingStrategySelect
                                     trainingStrategies={trainingStrategyOptions}
@@ -310,7 +295,7 @@ function TrainModel() {
                                     onChange={handleInputChange}
                                 />
                             </Grid>}
-                            { state.modelType && <Grid item xs={2}>
+                            {state.modelType && <Grid item xs={2}>
                                 <MetricSelect
                                     metrics={state.modelType === "regression" ? metricsRegressionOptions : state.modelType === "classification" ? metricsclassificationOptions : {}}
                                     value={state.metric}
@@ -320,12 +305,28 @@ function TrainModel() {
 
                         </Grid>
                     </Grid>
-                    <Box sx={{ p: 1 }}>
+                    {/* <Box sx={{ p: 1 }}>
                         <Container maxWidth={false} sx={containerStyles}>
                             {state.datasetError && <div>{state.datasetError}</div>}
                             {state.modelNameError && <div>{state.modelNameError}</div>}
                             {state.modelTypeError && <div>{state.modelTypeError}</div>}
                             {state.targetColumnError && <div>{state.targetColumnError}</div>}
+                            <Grid container spacing={3}>
+                              
+                            </Grid>
+                        </Container>
+                    </Box> */}
+                    <Box sx={{ p: 1 }}>
+                        <Container maxWidth={false} sx={{ ...containerStyles }}>
+                            {!isValidSubmission() && (
+                                <Alert severity="error" sx={{ mb: 2 }}>
+                                    <AlertTitle>Please fulfill these requirements!</AlertTitle>
+                                    {state.datasetError && <div>{state.datasetError}</div>}
+                                    {state.modelNameError && <div>{state.modelNameError}</div>}
+                                    {state.modelTypeError && <div>{state.modelTypeError}</div>}
+                                    {state.targetColumnError && <div>{state.targetColumnError}</div>}
+                                </Alert>
+                            )}
                             <Grid container spacing={3}>
                                 {/* ... */}
                             </Grid>

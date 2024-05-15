@@ -6,12 +6,18 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import { LoadingButton } from '@mui/lab'
 import * as XLSX from 'xlsx';
+import './ModelFormComponents.css';
+
+
 // View title
-export const TitleView = ({ titleText }) => ([
-    <Typography variant="h4" gutterBottom>
-        {titleText}
-    </Typography>
-])
+export const TitleView = ({ titleText, IconComponent }) => (
+    <div className="title-container">
+        {IconComponent && <div className="title-icon"> <IconComponent  /></div>}
+        <Typography variant="h5" gutterBottom className="title">
+            {titleText}
+        </Typography>
+    </div>
+);
 
 
 // Model Name Input

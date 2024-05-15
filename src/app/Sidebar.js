@@ -1,4 +1,6 @@
 import React, { useContext } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faCog, faComments, faInfoCircle, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import useLogout from '../authentication/useLogout';
 import { AuthContext } from '../authentication/AuthContext';
 
@@ -8,6 +10,7 @@ import logoutIcon from '../icons/logout.svg'; // Import the logout icon, ensure 
 const Sidebar = () => {
     const { isAuthenticated } = useContext(AuthContext);
     const logout = useLogout();
+
     return (
         <div className="sidebar">
             <div className="logo-container">
@@ -19,34 +22,31 @@ const Sidebar = () => {
             </div>
             <div className="menu-options">
                 <div className="menu-item">
-                    <span className="icon-home">&#8962;</span> {/* Replace with actual icon */}
-                    <span className="menu-text">Menu Option 01</span>
+                    <FontAwesomeIcon icon={faUser} className="icon" />
+                    <span className="menu-text">Users Management</span>
                 </div>
                 <div className="menu-item">
-                    <span className="icon-settings">&#9881;</span> {/* Replace with actual icon */}
-                    <span className="menu-text">Menu Option 02</span>
+                    <FontAwesomeIcon icon={faCog} className="icon" />
+                    <span className="menu-text">Settings</span>
                 </div>
             </div>
             <div className="bottom-section">
                 <div className="menu-item">
-                    <span className="icon-support">&#128172;</span> {/* Replace with actual icon */}
+                    <FontAwesomeIcon icon={faComments} className="icon" />
                     <span className="menu-text">Support</span>
                 </div>
                 <div className="menu-item">
-                    <span className="icon-settings">&#9881;</span> {/* Replace with actual icon */}
-                    <span className="menu-text">Settings</span>
+                    <FontAwesomeIcon icon={faInfoCircle} className="icon" />
+                    <span className="menu-text">About Me</span>
                 </div>
-                {isAuthenticated && (<div className="user-info">
-                    <span className="username">Connected</span>
-                    <button onClick={logout} className="logout-button" style={{ border: 'none', background: 'none' }}>
-                        <img src={logoutIcon} alt="Logout" className="logout-icon" />
-                    </button>
-                </div>)}
-                {/* {isAuthenticated && (
-          <Button color="inherit" onClick={logout}>
-            Logout
-          </Button>
-        )} */}
+                {isAuthenticated && (
+                    <div className="user-info">
+                        <span className="username">Connected</span>
+                        <button onClick={logout} className="logout-button" style={{ border: 'none', background: 'none' }}>
+                            <img src={logoutIcon} alt="Logout" className="logout-icon" />
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

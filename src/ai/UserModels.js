@@ -15,6 +15,11 @@ import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import { DataGrid } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
 import { handleMakeRequest } from '../app/RequestNavigator';
+import {TrainModelIcon} from '../icons/TrainModelIcon'
+
+import {
+    TitleView
+} from './ModelFormComponents';
 
 const UserModels = () => {
   const [tableData, setTableData] = useState([]);
@@ -101,6 +106,7 @@ const UserModels = () => {
 
   return (
     <Grid container justifyContent="center" sx={{ mt: 18 }}>
+      {/* <TitleView titleText="User Models" IconComponent={TrainModelIcon} /> */}
       <Grid item xs={12} md={8} lg={8}>
         <div style={{ height: 400, width: '100%' }}>
           <DataGrid

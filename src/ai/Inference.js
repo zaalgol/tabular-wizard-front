@@ -11,8 +11,11 @@ import {
     Container, Grid, Select, MenuItem,
     FormControl, InputLabel, Box
 } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import { LoadingButton } from '@mui/lab';
-import {trainingStrategyOptions, samplingStrategyOptions, metricsRegressionOptions, metricsclassificationOptions} from './consts' 
+import { trainingStrategyOptions, samplingStrategyOptions, metricsRegressionOptions, metricsclassificationOptions } from './consts'
+import { InfrenceIcon } from '../icons/InferenceIcon'
 
 
 const getModelDetails = async (navigate, modelName) => {
@@ -27,21 +30,6 @@ const getModelDetails = async (navigate, modelName) => {
         return [];
     }
 };
-
-
-
-// const trainingStrategyOptions = {
-//     'singleModelFast': 'Single Model Fast',
-//     'singleModelTuned': 'Single Model Tuned',
-//     'ensembleModelsFast': 'Ensemble Models Fast',
-//     'ensembleModelsTuned': 'ensemble Models Tuned'
-// };
-
-// const samplingStrategyOptions = {
-//     'oversampling': 'Oversampling',
-//     'dontOversample': 'Don\'t Oversample',
-//     'conditionalOversampling': 'Oversample if Major Class > 2x Minor Class'
-// }
 
 const Inference = () => {
     const [searchParams] = useSearchParams();
@@ -76,9 +64,9 @@ const Inference = () => {
             } else {
                 setState(prev => ({ ...prev, datasetError: "Dataset doesn't contains all model columns" }));
             }
-            
-        } 
-    
+
+        }
+
     };
 
 
@@ -88,10 +76,10 @@ const Inference = () => {
             // if (state.fileName === '') {
             //     setState(prev => ({ ...prev, columns: [], columnOptions: {} }));
             // } else {
-                const response = await getModelDetails(navigate, modelName);
-                const modelData = response.data.model;
-                setState(prev => ({ ...prev, model: modelData }));
-                // console.log(modelData);
+            const response = await getModelDetails(navigate, modelName);
+            const modelData = response.data.model;
+            setState(prev => ({ ...prev, model: modelData }));
+            // console.log(modelData);
             //}
         };
 
@@ -151,7 +139,7 @@ const Inference = () => {
     return (
         <Box sx={{ p: 1 }}>
             <Container maxWidth={false} sx={containerStyles}>
-                <TitleView titleText="Inference"></TitleView>
+                <TitleView titleText="Inference" IconComponent={InfrenceIcon} />
                 <Grid container spacing={3}>
                     <Grid item xs={2} sx={gridItemStyles}>
                         <DescriptionInput label="" value={modelName} />
@@ -246,7 +234,7 @@ const Inference = () => {
                                     }
                                 />
                             </Grid> */}
-                             <Grid item xs={2}>
+                            <Grid item xs={2}>
                                 <TrainingStrategySelect
                                     readOnly={true}
                                     value={state.model.training_strategy || ''}
@@ -277,11 +265,11 @@ const Inference = () => {
                                         }))
                                     }
                                 />
-                            </Grid> }
-                            { state.model.model_type && <Grid item xs={2}>
+                            </Grid>}
+                            {state.model.model_type && <Grid item xs={2}>
                                 <MetricSelect
                                     readOnly={true}
-                                    metrics={state.model.model_type === "regression" ? metricsRegressionOptions : state.model.model_type  === "classification" ? metricsclassificationOptions : {}}
+                                    metrics={state.model.model_type === "regression" ? metricsRegressionOptions : state.model.model_type === "classification" ? metricsclassificationOptions : {}}
                                     value={state.model.metric || ''}
                                     onChange={(event) =>
                                         setState((prev) => ({
@@ -293,12 +281,19 @@ const Inference = () => {
                                         }))
                                     }
                                 />
-                            </Grid> }
+                            </Grid>}
                         </Grid>
                     </Grid>
                     <Box sx={{ p: 1 }}>
                         <Container maxWidth={false} sx={containerStyles}>
-                            {state.datasetError && <div>{state.datasetError}</div>}
+                            {state.datasetError &&
+                                // <div>{state.datasetError}</div>
+                                <Alert severity="error" sx={{ mb: 2 }}>
+                                    <AlertTitle>Please fulfill these requirements!</AlertTitle>
+                                    <div>{state.datasetError}</div>
+
+                                </Alert>
+                            }
                             <Grid container spacing={1}>
                                 {/* ... */}
                             </Grid>
@@ -309,7 +304,7 @@ const Inference = () => {
                             variant="contained"
                             color="primary"
                             onClick={handleSubmit}
-                            disabled={!!state.datasetError} 
+                            disabled={!!state.datasetError}
                         >
                             Inference
                         </LoadingButton>
