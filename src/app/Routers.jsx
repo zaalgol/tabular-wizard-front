@@ -3,7 +3,7 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-
+import React from 'react';
 import Login from "../authentication/Login";
 import TrainModel from "../ai/TrainModel"
 import UserModels from "../ai/UserModels"
