@@ -305,17 +305,6 @@ function TrainModel() {
 
                         </Grid>
                     </Grid>
-                    {/* <Box sx={{ p: 1 }}>
-                        <Container maxWidth={false} sx={containerStyles}>
-                            {state.datasetError && <div>{state.datasetError}</div>}
-                            {state.modelNameError && <div>{state.modelNameError}</div>}
-                            {state.modelTypeError && <div>{state.modelTypeError}</div>}
-                            {state.targetColumnError && <div>{state.targetColumnError}</div>}
-                            <Grid container spacing={3}>
-                              
-                            </Grid>
-                        </Container>
-                    </Box> */}
                     <Box sx={{ p: 1 }}>
                         <Container maxWidth={false} sx={{ ...containerStyles }}>
                             {!isValidSubmission() && (
