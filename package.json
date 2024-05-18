@@ -1,29 +1,29 @@
 {
   "name": "tabular-wizard-front",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.0",
+    "@emotion/styled": "^11.11.5",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
-    "@fortawesome/react-fontawesome": "^0.2.0",
-    "@mui/icons-material": "^5.15.12",
+    "@fortawesome/react-fontawesome": "^0.2.1",
+    "@mui/icons-material": "^5.15.18",
     "@mui/lab": "^5.0.0-alpha.168",
-    "@mui/material": "^5.15.12",
-    "@mui/x-data-grid": "^7.1.0",
-    "@mui/x-data-grid-generator": "^7.0.0",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.6.7",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.3",
-    "react-scripts": "5.0.1",
+    "@mui/material": "^5.15.18",
+    "@mui/x-data-grid": "^7.5.0",
+    "@mui/x-data-grid-generator": "^7.3.2",
+    "@testing-library/jest-dom": "^6.4.5",
+    "@testing-library/react": "^15.0.7",
+    "@testing-library/user-event": "^14.5.2",
+    "axios": "^1.6.8",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.23.1",
+    "react-scripts": "^3.0.1",
     "socket.io-client": "^4.7.5",
     "uuid": "^9.0.1",
-    "web-vitals": "^2.1.4",
+    "web-vitals": "4.0.0",
     "xlsx": "^0.18.5"
   },
   "scripts": {
@@ -35,7 +35,8 @@
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
+      "react-app/jest",
+      "next/core-web-vitals"
     ]
   },
   "browserslist": {
@@ -49,5 +50,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-private-property-in-object": "^7.24.5"
   }
 }

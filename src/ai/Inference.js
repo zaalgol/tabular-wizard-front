@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { DataGrid } from '@mui/x-data-grid'
 import { handleMakeRequest } from '../app/RequestNavigator';
 import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { List, ListItem, ListItemText, Paper, Typography } from '@mui/material'
-import { ModelNameInput, DescriptionInput, TargetColumnSelect, ModelTypeRadioGroup, TrainingStrategySelect, SamplingStrategySelect, UploadFile, MetricSelect, TitleView }
+import {  DescriptionInput, ModelTypeRadioGroup, TrainingStrategySelect, SamplingStrategySelect, UploadFile, MetricSelect, TitleView }
     from './ModelFormComponents';
-import * as XLSX from 'xlsx';
 import {
-    Container, Grid, Select, MenuItem,
-    FormControl, InputLabel, Box
+    Container, Grid, Box
 } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
