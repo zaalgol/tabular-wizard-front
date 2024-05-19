@@ -14,8 +14,14 @@
   padding: 0 20px; /* Adjust as necessary */
 }
 
+.logo {
+  width: 30px; /* Adjust the width as needed */
+  height: 33px; 
+}
+
+
 .menu-icon {
-  margin-right: 20px; /* Adjust this value to position the icon */
+  margin-right: 2px; /* Adjust this value to position the icon */
 }
 
 .title {

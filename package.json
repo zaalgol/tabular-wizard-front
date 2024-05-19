@@ -10,24 +10,24 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/react-fontawesome": "^0.2.1",
     "@mui/icons-material": "^5.15.12",
     "@mui/lab": "^5.0.0-alpha.168",
     "@mui/material": "^5.15.12",
     "@mui/x-data-grid": "^7.1.0",
     "@mui/x-data-grid-generator": "^7.0.0",
     "axios": "^1.6.7",
+    "exceljs": "^4.4.0",
+    "papaparse": "^5.4.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
     "socket.io-client": "^4.7.5",
     "uuid": "^9.0.1",
-    "web-vitals": "^2.1.4",
-    "xlsx": "^0.18.5",
-    "@fortawesome/free-solid-svg-icons": "^6.5.2",
-    "@fortawesome/react-fontawesome": "^0.2.1"
-
+    "web-vitals": "^2.1.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

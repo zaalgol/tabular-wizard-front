@@ -5,7 +5,8 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { LoadingButton } from '@mui/lab'
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
+import Papa from 'papaparse';
 import './ModelFormComponents.css';
 
 
@@ -160,59 +161,96 @@ export const ModelEnsembleRadioGroup = ({ value, onChange, readOnly = false }) =
 export const UploadFile = ({ state, updateData, setState, loading, handleRemoveFile }) => {
     const fileInputRef = React.createRef();
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         const files = e.target.files;
         if (files && files[0]) {
             const file = files[0];
             setState(prev => ({ ...prev, isLoading: true }));
             setState(prev => ({ ...prev, fileName: file.name, fileSize: file.size }));
 
-            const reader = new FileReader();
-            reader.onload = (evt) => {
-                const bstr = evt.target.result;
-                const wb = XLSX.read(bstr, {
-                    type: 'binary',
-                    cellDates: true,  // Continue to convert date serials to JS Date objects
-                    dateNF: 'yyyy-mm-dd'  // This sets the date format, but will now convert to string immediately after reading
-                });
-                const wsname = wb.SheetNames[0];
-                const ws = wb.Sheets[wsname];
-                const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" }).map(row =>
-                    row.map(cell => {
-                        if (cell instanceof Date) {
-                            // Format the date as a string in the desired format
-                            return `${cell.getFullYear()}-${('0' + (cell.getMonth() + 1)).slice(-2)}-${('0' + cell.getDate()).slice(-2)}`;
-                        } else if (typeof cell === 'string') {
-                            return cell.trim();
-                        } else {
-                            return cell;
+            if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+                const reader = new FileReader();
+                reader.onload = async (evt) => {
+                    const arrayBuffer = evt.target.result;
+                    const workbook = new ExcelJS.Workbook();
+                    await workbook.xlsx.load(arrayBuffer);
+                    const worksheet = workbook.worksheets[0];
+
+                    const jsonData = [];
+                    worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+                        const rowData = [];
+                        row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                            if (cell.type === ExcelJS.ValueType.Date) {
+                                rowData.push(`${cell.value.getFullYear()}-${('0' + (cell.value.getMonth() + 1)).slice(-2)}-${('0' + cell.value.getDate()).slice(-2)}`);
+                            } else if (typeof cell.value === 'string') {
+                                rowData.push(cell.value.trim());
+                            } else {
+                                rowData.push(cell.value);
+                            }
+                        });
+                        jsonData.push(rowData);
+                    });
+
+                    if (jsonData.length > 0) {
+                        const headers = jsonData[0];
+                        const validIndexes = headers.map((header, index) => header ? index : null).filter(index => index != null);
+                        const filteredData = jsonData.map(row =>
+                            row.filter((_, index) => validIndexes.includes(index))
+                        );
+
+                        updateData(filteredData);
+                    }
+
+                    setState(prev => ({ ...prev, isLoading: false }));
+                };
+                reader.onerror = () => {
+                    console.error('Error reading file');
+                    setState(prev => ({ ...prev, isLoading: false }));
+                };
+                reader.readAsArrayBuffer(file);
+            } else if (file.type === "text/csv") {
+                Papa.parse(file, {
+                    complete: (result) => {
+                        const jsonData = result.data.map(row =>
+                            row.map(cell => {
+                                // Check if the cell is a valid number and return as a number
+                                if (!isNaN(cell) && cell.trim() !== '') {
+                                    return Number(cell);
+                                }
+                                if (typeof cell === 'string') {
+                                    return cell.trim();
+                                } else {
+                                    return cell;
+                                }
+                            })
+                        );
+
+                        // Filter out empty rows
+                        const filteredJsonData = jsonData.filter(row => row.some(cell => cell !== ''));
+
+                        if (filteredJsonData.length > 0) {
+                            const headers = filteredJsonData[0];
+                            const validIndexes = headers.map((header, index) => header ? index : null).filter(index => index != null);
+                            const filteredData = filteredJsonData.map(row =>
+                                row.filter((_, index) => validIndexes.includes(index))
+                            );
+
+                            updateData(filteredData);
                         }
-                    })
-                );
 
-                if (jsonData.length > 0) {
-                    // Filter out columns without headers (empty strings) from the first row
-                    const headers = jsonData[0];
-                    const validIndexes = headers.map((header, index) => header ? index : null).filter(index => index != null);
-                    const filteredData = jsonData.map(row =>
-                        row.filter((_, index) => validIndexes.includes(index))
-                    );
-
-                    // Update state with filtered data
-                    updateData(filteredData);
-                }
-
+                        setState(prev => ({ ...prev, isLoading: false }));
+                    },
+                    error: (error) => {
+                        console.error('Error parsing CSV file', error);
+                        setState(prev => ({ ...prev, isLoading: false }));
+                    }
+                });
+            } else {
+                console.error('Unsupported file type');
                 setState(prev => ({ ...prev, isLoading: false }));
-            };
-            reader.onerror = () => {
-                console.error('Error reading file');
-                setState(prev => ({ ...prev, isLoading: false }));
-            };
-            reader.readAsBinaryString(file);
-
+            }
         }
     };
-
 
     return (
         <div>

@@ -9,7 +9,8 @@ function Header() {
   return (
     <div className="header">
       <div className="menu-icon">
-        <MenuIcon />
+        {/* <MenuIcon /> */}
+        <img src="src\icons\image_icon.ico" alt="Tabularwizard Logo" class="logo"/>
       </div>
       <div className="title">Tabular Wizard</div>
       <div className="controls">
