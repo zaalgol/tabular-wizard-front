@@ -28,8 +28,6 @@ function TrainModel() {
         columns: [],
         targetColumn: '',
         modelType: '',
-        // trainingSpeed: 'fast',
-        // modelEnsemble: 'multi',
         columnOptions: {},
         currentPage: 1,
         rowsPerPage: ROWS_PER_PAGE,
@@ -43,19 +41,14 @@ function TrainModel() {
         fileSize: 0,
         metric: '',
         trainingStrategy: 'ensembleModelsFast',
-        samplingStrategy: 'conditionalOversampling'
+        samplingStrategy: 'dontOversample'
     });
-
-
-
 
     const navigate = useNavigate();
 
     const isValidSubmission = () => {
         return !state.datasetError && !state.modelNameError && !state.modelTypeError && !state.targetColumnError;
     };
-
-
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -221,7 +214,7 @@ function TrainModel() {
 
     // Add custom styling here
     const containerStyles = {
-        marginTop: '4px', // Adjust the top margin
+        marginTop: '1px', // Adjust the top margin
         marginRight: '16px', // Adjust the right margin
     };
 
@@ -229,7 +222,7 @@ function TrainModel() {
         padding: '8px', // Provides spacing inside each grid item
     };
 
-    return (
+    return (    
         <Box sx={{ p: 1 }}> {/* Use Box to provide padding around the entire component */}
             <Container maxWidth={false} sx={containerStyles}>
                 <TitleView titleText="Train Model" IconComponent={TrainModelIcon} />
@@ -254,8 +247,7 @@ function TrainModel() {
                             handleRemoveFile={handleRemoveFile}
                             setState={setState}
                             loading={state.isLoading}
-                        >
-                        </UploadFile>
+                        />
                     </Grid>
                     <Grid item xs={12}>
                         <DatasetContent
@@ -274,7 +266,7 @@ function TrainModel() {
                         />
                     </Grid>}
                     <Grid item xs={12}>
-                        <Grid container spacing={8} alignItems="center">
+                        <Grid container spacing={2} alignItems="center">
                             <Grid item>
                                 <ModelTypeRadioGroup
                                     value={state.modelType}
@@ -308,7 +300,7 @@ function TrainModel() {
                     <Box sx={{ p: 1 }}>
                         <Container maxWidth={false} sx={{ ...containerStyles }}>
                             {!isValidSubmission() && (
-                                <Alert severity="error" sx={{ mb: 2 }}>
+                                <Alert severity="error" sx={{ mb: 1 }}>
                                     <AlertTitle>Please fulfill these requirements!</AlertTitle>
                                     {state.datasetError && <div>{state.datasetError}</div>}
                                     {state.modelNameError && <div>{state.modelNameError}</div>}
@@ -316,9 +308,6 @@ function TrainModel() {
                                     {state.targetColumnError && <div>{state.targetColumnError}</div>}
                                 </Alert>
                             )}
-                            <Grid container spacing={3}>
-                                {/* ... */}
-                            </Grid>
                         </Container>
                     </Box>
                     <Grid item xs={12}>

@@ -10,7 +10,7 @@ function Header() {
     <div className="header">
       <div className="menu-icon">
         {/* <MenuIcon /> */}
-        <img src="src\icons\image_icon.ico" alt="Tabularwizard Logo" class="logo"/>
+        <img src="logo12.png" alt="Tabularwizard Logo" class="logo"/>
       </div>
       <div className="title">Tabular Wizard</div>
       <div className="controls">

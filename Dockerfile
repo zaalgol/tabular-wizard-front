@@ -13,11 +13,11 @@ RUN npm install
 # Copy the rest of your app's source code
 COPY . .
 
-# Make port 3000 available to the world outside this container
-EXPOSE 3000
+# Make port 5173 available to the world outside this container
+EXPOSE 5173
 
 # Define environment variable
 ENV NAME World
 
 # Run the app when the container launches
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
