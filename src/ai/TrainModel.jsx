@@ -62,6 +62,7 @@ function TrainModel() {
             ...prev,
             columns: jsonData[0],
             data: jsonData,
+            // fileSize: jsonData.length,
             isLoading: false,
         }));
     }
@@ -71,7 +72,7 @@ function TrainModel() {
         if (fileInputRef && fileInputRef.current) {
             fileInputRef.current.value = '';
         }
-        setState(prev => ({ ...prev, fileName: '', fileSize: 0, data: [], columns: [], columnOptions: {} }));
+        setState(prev => ({ ...prev, fileName: '', fileSize: 0, data: [], columns: [], columnOptions: {}, targetColumn: '' }));
     };
 
     const handleOptionChange = (colIndex, event) => {
@@ -169,6 +170,7 @@ function TrainModel() {
 
             // Prepare the payload
             const payload = {
+                fileName: state.fileName,
                 modelName: state.modelName.trim(),
                 description: state.description.trim(),
                 dataset: [filteredHeaders, ...filteredRows],

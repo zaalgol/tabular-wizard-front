@@ -23,7 +23,7 @@ export const metricsRegressionOptions = {
 export const metricsclassificationOptions = {
     'accuracy': 'accuracy',
     'f1': 'f1',
-    'neg_log_loss': 'log loss',
+    'log_loss': 'log loss',
     'roc_auc': 'roc auc',
     'recall': 'recall',
     'precision': 'precision'

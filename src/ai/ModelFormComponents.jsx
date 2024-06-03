@@ -165,7 +165,7 @@ export const UploadFile = ({ state, updateData, setState, loading, handleRemoveF
         if (files && files[0]) {
             const file = files[0];
             setState(prev => ({ ...prev, isLoading: true }));
-            setState(prev => ({ ...prev, fileName: file.name, fileSize: file.size }));
+            setState(prev => ({ ...prev, fileName: file.name, fileSize: file.size, targetColumn: '' }));
 
             if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
                 const reader = new FileReader();
