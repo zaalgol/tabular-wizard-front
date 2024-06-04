@@ -18,7 +18,7 @@ import { handleMakeRequest } from '../app/RequestNavigator';
 import { ModelsGridIcon } from '../icons/ModelsGridIcon';
 
 import { TitleView } from './ModelFormComponents';
-import { trainingStrategyOptions } from './consts'
+import { trainingStrategyOptions, samplingStrategyOptions, metricsRegressionOptions, metricsclassificationOptions } from './consts'
 
 const UserModels = () => {
   const [tableData, setTableData] = useState([]);
@@ -34,7 +34,9 @@ const UserModels = () => {
         const response = await handleMakeRequest(navigate, '/api/userModels/', 'GET', null, {}, true);
         const modelsArray = response.data.models.map(model => ({
           ...model,
-          training_strategy: trainingStrategyOptions[model.training_strategy]
+          training_strategy: trainingStrategyOptions[model.training_strategy],
+          metric: {...metricsRegressionOptions, ...metricsclassificationOptions}[model.metric],
+          sampling_strategy: samplingStrategyOptions[model.sampling_strategy]
         }));
         setTableData(modelsArray);
       } catch (error) {
@@ -74,12 +76,13 @@ const UserModels = () => {
 
   const columns = [
     { field: 'id', headerName: 'Name', width: 200, headerAlign: 'center' },
-    { field: 'description', headerName: 'Description', width: 281, headerAlign: 'center' },
+    { field: 'description', headerName: 'Description', width: 170, headerAlign: 'center' },
     { field: 'created_at', headerName: 'Created At', width: 200, headerAlign: 'center' },
     { field: 'file_name', headerName: 'Train File Name', width: 180, headerAlign: 'center' },
-    { field: 'file_line_num', headerName: 'Dataset Line Number', width: 180, headerAlign: 'center' },
+    { field: 'file_line_num', headerName: 'Dataset Lines', width: 110, headerAlign: 'center' },
     { field: 'model_type', headerName: 'Model Type', width: 110, headerAlign: 'center' },
     { field: 'training_strategy', headerName: 'Training Strategy', width: 180, headerAlign: 'center' },
+    { field: 'sampling_strategy', headerName: 'Sampling Strategy', width: 180, headerAlign: 'center' },
     { field: 'metric', headerName: 'Metric', width: 80, headerAlign: 'center' },
     { field: 'train_score', headerName: 'Train Score', width: 100, headerAlign: 'center' },
     { field: 'test_score', headerName: 'Test Score', width: 100, headerAlign: 'center' },
@@ -124,7 +127,7 @@ const UserModels = () => {
         <TitleView titleText="User Models" IconComponent={ModelsGridIcon} />
       </Grid>
       <Grid item xs={12} sx={{ width: '100%', pl: 3, pr: 3 }}>
-        <div style={{ height: 400, width: '100%' }}>
+        <div style={{ height: 600, width: '100%' }}>
           <DataGrid
             initialState={{
               pagination: { pageSize: pageSize },
