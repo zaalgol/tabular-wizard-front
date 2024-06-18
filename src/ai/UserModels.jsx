@@ -75,13 +75,13 @@ const UserModels = () => {
   };
 
   const columns = [
-    { field: 'id', headerName: 'Name', width: 200, headerAlign: 'center' },
-    { field: 'description', headerName: 'Description', width: 170, headerAlign: 'center' },
+    { field: 'id', headerName: 'Name', width: 270, headerAlign: 'center' },
+    { field: 'description', headerName: 'Description', width: 110, headerAlign: 'center' },
     { field: 'created_at', headerName: 'Created At', width: 200, headerAlign: 'center' },
     { field: 'file_name', headerName: 'Train File Name', width: 180, headerAlign: 'center' },
     { field: 'file_line_num', headerName: 'Dataset Lines', width: 110, headerAlign: 'center' },
     { field: 'model_type', headerName: 'Model Type', width: 110, headerAlign: 'center' },
-    { field: 'training_strategy', headerName: 'Training Strategy', width: 180, headerAlign: 'center' },
+    { field: 'training_strategy', headerName: 'Training Strategy', width: 170, headerAlign: 'center' },
     { field: 'sampling_strategy', headerName: 'Sampling Strategy', width: 180, headerAlign: 'center' },
     { field: 'metric', headerName: 'Metric', width: 80, headerAlign: 'center' },
     { field: 'train_score', headerName: 'Train Score', width: 100, headerAlign: 'center' },
