@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import {
     Container, Grid, Select, MenuItem,
-    FormControl, InputLabel, Box
+    FormControl, InputLabel, Box, Checkbox, FormControlLabel
 } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import { LoadingButton } from '@mui/lab';
 import { handleMakeRequest } from '../app/RequestNavigator';
 import { useNavigate } from 'react-router-dom';
-import { TrainModelIcon } from '../icons/TrainModelIcon'
+import { TrainModelIcon } from '../icons/TrainModelIcon';
 
 import {
     ModelNameInput, DescriptionInput, TargetColumnSelect, MetricSelect, TrainingStrategySelect, SamplingStrategySelect,
     ModelTypeRadioGroup, UploadFile, DatasetContent, TitleView
 } from './ModelFormComponents';
 
-import { trainingStrategyOptions, samplingStrategyOptions, metricsRegressionOptions, metricsclassificationOptions } from './consts'
+import { trainingStrategyOptions, samplingStrategyOptions, metricsRegressionOptions, metricsclassificationOptions } from './consts';
 
 const ROWS_PER_PAGE = 5; // Set the number of rows per page
 const INITIAL_PAGE = 1;
@@ -41,7 +41,8 @@ function TrainModel() {
         fileSize: 0,
         metric: '',
         trainingStrategy: 'ensembleModelsFast',
-        samplingStrategy: 'dontOversample'
+        samplingStrategy: 'dontOversample',
+        isTimeSeries: false,
     });
 
     const navigate = useNavigate();
@@ -51,9 +52,9 @@ function TrainModel() {
     };
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
         setState(prev => {
-            return { ...prev, [name]: value };
+            return { ...prev, [name]: type === 'checkbox' ? checked : value };
         });
     };
 
@@ -179,6 +180,7 @@ function TrainModel() {
                 trainingStrategy: state.trainingStrategy,
                 samplingStrategy: state.samplingStrategy,
                 metric: state.metric,
+                isTimeSeries: state.isTimeSeries, 
             };
 
             // Send the data to the server
@@ -273,6 +275,18 @@ function TrainModel() {
                                 <ModelTypeRadioGroup
                                     value={state.modelType}
                                     onChange={handleInputChange}
+                                />
+                            </Grid>
+                            <Grid item>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={state.isTimeSeries}
+                                            onChange={handleInputChange}
+                                            name="isTimeSeries"
+                                        />
+                                    }
+                                    label="Is Time Series"
                                 />
                             </Grid>
                             <Grid item xs={2}>
