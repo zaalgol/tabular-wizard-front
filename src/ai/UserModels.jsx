@@ -18,10 +18,12 @@ import { handleMakeRequest } from '../app/RequestNavigator';
 import { ModelsGridIcon } from '../icons/ModelsGridIcon';
 
 import { TitleView } from './ModelFormComponents';
-import { trainingStrategyOptions, samplingStrategyOptions, metricsRegressionOptions, metricsclassificationOptions } from './consts'
+import { trainingStrategyOptions, samplingStrategyOptions, metricsRegressionOptions, metricsclassificationOptions } from './consts';
 
 const UserModels = () => {
   const [tableData, setTableData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [filter, setFilter] = useState('');
   const [pageSize] = useState(5);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -39,6 +41,7 @@ const UserModels = () => {
           sampling_strategy: samplingStrategyOptions[model.sampling_strategy]
         }));
         setTableData(modelsArray);
+        setFilteredData(modelsArray);
       } catch (error) {
         console.error('Failed to fetch AI models: ', error);
       }
@@ -46,6 +49,20 @@ const UserModels = () => {
 
     fetchData();
   }, [navigate]);
+
+  useEffect(() => {
+    if (filter) {
+      const lowercasedFilter = filter.toLowerCase();
+      const filteredData = tableData.filter(item =>
+        Object.keys(item).some(key =>
+          String(item[key]).toLowerCase().includes(lowercasedFilter)
+        )
+      );
+      setFilteredData(filteredData);
+    } else {
+      setFilteredData(tableData);
+    }
+  }, [filter, tableData]);
 
   const handleDelete = async (id) => {
     setTableData(tableData.filter((item) => item.id !== id));
@@ -119,21 +136,25 @@ const UserModels = () => {
 
   return (
     <Grid container justifyContent="center" sx={{ mt: 3 }}>
-      {/* <Grid item xs={12} sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', pl: 3, pr: 3 }}>
+      <Grid item xs={12} sx={{ mb: 3, display: 'flex', alignItems: 'center', pl: 4, pr: 4, justifyContent: 'space-between' }}>
         <TitleView titleText="User Models" IconComponent={ModelsGridIcon} />
-      </Grid> */}
-      {/* <TitleView titleText="User Models" IconComponent={ModelsGridIcon} /> */}
-      <Grid item xs={12} sx={{ mb: 3, display: 'flex', alignItems: 'center', pl: 4 }}>
-        <TitleView titleText="User Models" IconComponent={ModelsGridIcon} />
+        <TextField
+          variant="outlined"
+          placeholder="Filter models"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          size="small"
+          sx={{ width: '300px' }}
+        />
       </Grid>
-      <Grid item xs={12} sx={{ width: '100%', pl: 3, pr: 3 }}>
+      <Grid item xs={12} sx={{ width: '100%', pl: 4, pr: 4 }}>
         <div style={{ height: 600, width: '100%' }}>
           <DataGrid
             initialState={{
               pagination: { pageSize: pageSize },
             }}
             pageSizeOptions={[5, 10, 25]}
-            rows={tableData}
+            rows={filteredData}
             columns={columns}
             sx={{
               '& .action-column-header': {
@@ -152,15 +173,12 @@ const UserModels = () => {
               '& .MuiDataGrid-cell': {
                 textAlign: 'center',
                 borderRight: '1px solid rgba(224, 224, 224, 1)', // Add vertical lines between cells
-                // borderRight: 'none',
               },
               '& .MuiDataGrid-columnHeader': {
                 borderRight: '1px solid rgba(224, 224, 224, 1)', // Add vertical lines between column headers
-                // borderRight: 'none',
               },
               '& .MuiDataGrid-columnHeader:last-child': {
                 borderRight: 'none', // Remove the right border from the last column header
-                //borderRight: '1px solid rgba(224, 224, 224, 1)', // Add vertical lines between column headers
               },
               '& .MuiDataGrid-columnHeaders': {
                 borderBottom: '1px solid rgba(224, 224, 224, 1)',
@@ -169,46 +187,6 @@ const UserModels = () => {
           />
         </div>
       </Grid>
-      {/* <Grid item xs={12} sx={{ width: '100%', pl: 3, pr: 3 }}>
-        <div style={{ height: 400, width: '100%' }}>
-          <DataGrid
-            initialState={{
-              pagination: { pageSize: pageSize },
-            }}
-            pageSizeOptions={[5, 10, 25]}
-            rows={tableData}
-            columns={columns}
-            sx={{
-              '& .action-column-header': {
-                borderLeft: '2px solid rgba(224, 224, 224, 1)',
-              },
-              '& .action-column-cell': {
-                borderLeft: '2px solid rgba(224, 224, 224, 1)',
-              },
-              '& .MuiDataGrid-columnHeaderTitle': {
-                fontWeight: 'bold',
-                textAlign: 'center',
-              },
-              '& .MuiDataGrid-footerContainer': {
-                display: 'none',
-              },
-              '& .MuiDataGrid-cell': {
-                textAlign: 'center',
-                boxShadow: 'inset -1px 0 0 rgba(224, 224, 224, 1)', // Add vertical lines between cells
-              },
-              '& .MuiDataGrid-columnHeader': {
-                boxShadow: 'inset -1px 0 0 rgba(224, 224, 224, 1)', // Add vertical lines between column headers
-              },
-              '& .MuiDataGrid-columnHeader:last-child': {
-                boxShadow: 'none', // Remove the vertical line from the last column header
-              },
-              '& .MuiDataGrid-columnHeaders': {
-                borderBottom: '1px solid rgba(224, 224, 224, 1)',
-              },
-            }}
-          />
-        </div>
-      </Grid> */}
       <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
         <DialogTitle>Edit Description</DialogTitle>
         <TextField
