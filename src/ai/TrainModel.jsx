@@ -58,6 +58,15 @@ function TrainModel() {
         });
     };
 
+    const handleModelTypeChange = (e) => {
+        const { value } = e.target;
+        setState(prev => ({
+            ...prev,
+            modelType: value,
+            samplingStrategy: value === 'regression' ? 'dontOversample' : prev.samplingStrategy
+        }));
+    };
+
     function updateData(jsonData) {
         setState(prev => ({
             ...prev,
@@ -274,7 +283,7 @@ function TrainModel() {
                             <Grid item>
                                 <ModelTypeRadioGroup
                                     value={state.modelType}
-                                    onChange={handleInputChange}
+                                    onChange={handleModelTypeChange}
                                 />
                             </Grid>
                             <Grid item>
