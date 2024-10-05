@@ -281,13 +281,20 @@ export const UploadFile = ({ state, updateData, setState, loading, handleRemoveF
     );
 };
 
+
 export const DatasetContent = ({ state, renderColumnOptions, handleChangePage, handleChangeRowsPerPage }) => (
     <TableContainer component={Paper} sx={{ maxHeight: 327, overflow: 'auto' }}>
         <Table stickyHeader aria-label="sticky table">
             <TableHead>
-                <TableRow>
+                <TableRow sx={{ borderTop: '2px solid rgba(224, 224, 224, 1)' }}>
                     {state.columns.map((col, index) => (
-                        <TableCell key={index}>
+                        <TableCell
+                            key={index}
+                            sx={{ 
+                                borderRight: index < state.columns.length - 1 ? '1px solid rgba(224, 224, 224, 1)' : 'none',
+                                borderTop: '2px solid rgba(224, 224, 224, 1)' // Add a thicker top border for visibility
+                            }}
+                        >
                             <Typography variant="h6">{col}</Typography>
                             {renderColumnOptions(index)}
                         </TableCell>
@@ -301,7 +308,14 @@ export const DatasetContent = ({ state, renderColumnOptions, handleChangePage, h
                     .map((row, rowIndex) => (
                         <TableRow key={rowIndex}>
                             {row.map((cell, cellIndex) => (
-                                <TableCell key={cellIndex}>{cell}</TableCell>
+                                <TableCell
+                                    key={cellIndex}
+                                    sx={{ 
+                                        borderRight: cellIndex < row.length - 1 ? '1px solid rgba(224, 224, 224, 1)' : 'none' 
+                                    }}
+                                >
+                                    {cell}
+                                </TableCell>
                             ))}
                         </TableRow>
                     ))}
