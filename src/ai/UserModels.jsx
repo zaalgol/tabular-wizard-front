@@ -38,7 +38,8 @@ const UserModels = () => {
           ...model,
           training_strategy: trainingStrategyOptions[model.training_strategy],
           metric: {...metricsRegressionOptions, ...metricsclassificationOptions}[model.metric],
-          sampling_strategy: samplingStrategyOptions[model.sampling_strategy]
+          sampling_strategy: samplingStrategyOptions[model.sampling_strategy],
+          created_at: new Date(model.created_at),
         }));
         setTableData(modelsArray);
         setFilteredData(modelsArray);
