@@ -13,27 +13,22 @@ import appConfig from '../config/config.json';
  */
 const makeRequest = async (url, method, body = null, headers = {}, useToken = true) => {
   try {
-    // Add Authorization token to headers if useToken is true
     if (useToken) {
       const token = localStorage.getItem('access_token');
-    headers['Authorization'] = `Bearer ${token}`;
+      headers['Authorization'] = `Bearer ${token}`;
     }
     url = `${appConfig.SERVER_ADDRESS}:${appConfig.SERVER_PORT}` + url;
-    // Configurations for the axios request
     const config = {
       method,
       url,
       headers,
-      ...(body && { data: body }), // Conditionally add body if it exists
+      withCredentials: true, // Include cookies
+      ...(body && { data: body }),
     };
-
-    // Make the request
     return await axios(config);
-
   } catch (error) {
-    // Handle error
     console.error("HTTP Request Error:", error);
-    throw error; // Rethrow if you want the calling function to handle it
+    throw error;
   }
 };
 

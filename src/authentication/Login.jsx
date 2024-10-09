@@ -14,13 +14,11 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await handleMakeRequest(navigate,'/api/login/', 'POST', { email, password }, {}, false, false)
-      
+      const response = await handleMakeRequest(navigate, '/api/login/', 'POST', { email, password }, {}, false);
       if (response.status === 200) {
         setIsAuthenticated(true);
         localStorage.setItem('access_token', response.data.access_token);
-        navigate('/userModels'); 
-          
+        navigate('/userModels');
       }
     } catch (error) {
       console.error("Login failed:", error);

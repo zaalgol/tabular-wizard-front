@@ -8,6 +8,7 @@ const useLogout = () => {
 
   const logout = () => {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     setIsAuthenticated(false);
     navigate('/login');
   };
