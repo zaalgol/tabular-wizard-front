@@ -173,23 +173,32 @@ function TrainModel() {
             // Extract headers and rows from the data
             const [headers, ...rows] = state.data; // Access data using state.data
 
-            // Filter columns based on the 'Use column data' option
-            const filteredColumnsIndexes = headers.map((_, index) => index).filter(index => state.columnOptions[index] === 'raw'); // Use state.columnOptions
-            const filteredHeaders = headers.filter((_, index) => filteredColumnsIndexes.includes(index));
-            const filteredRows = rows.map(row => row.filter((_, index) => filteredColumnsIndexes.includes(index)));
+            const filteredColumns = headers.map((header, index) => {
+                const option = state.columnOptions[index];
+                if (option === 'raw') {
+                    return { header, type: 'raw' }; // Regular column data
+                } else if (option === 'semantic') {
+                    return { header, type: 'semantic' }; // Semantic column data
+                } else {
+                    return null; // Ignore column data
+                }
+            }).filter(column => column !== null);
+
+            const filteredRows = rows.map(row => row.filter((_, index) => state.columnOptions[index] !== 'ignore'));
 
             // Prepare the payload
             const payload = {
                 fileName: state.fileName,
                 modelName: state.modelName.trim(),
                 description: state.description.trim(),
-                dataset: [filteredHeaders, ...filteredRows],
+                dataset: [filteredColumns.map(col => col.header), ...filteredRows],
                 targetColumn: state.targetColumn,
                 modelType: state.modelType,
                 trainingStrategy: state.trainingStrategy,
                 samplingStrategy: state.samplingStrategy,
                 metric: state.metric,
                 isTimeSeries: state.isTimeSeries, 
+                columnTypes: filteredColumns.map(col => col.type), // Send column type (raw or semantic),
             };
 
             // Send the data to the server
@@ -215,6 +224,7 @@ function TrainModel() {
                     onChange={(event) => handleOptionChange(colIndex, event)}
                 >
                     <MenuItem value={'raw'}>Use column data</MenuItem>
+                    <MenuItem value={'semantic'}>Use semantic column data</MenuItem>
                     {/* TODU: Add encryption logic*/}
                     {/* <MenuItem value={'data_encrypt'}>Encrypt column data</MenuItem>
                     <MenuItem value={'column_name_encrypt'}>Encrypt column name</MenuItem>

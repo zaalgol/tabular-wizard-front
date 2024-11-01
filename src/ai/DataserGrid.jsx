@@ -35,6 +35,7 @@ const CustomColumnHeader = ({ column }) => {
                 >
                     {/* <MenuItem value="" disabled>Options</MenuItem> */}
                     <MenuItem value={'raw'}>Use column data</MenuItem>
+                    <MenuItem value={'raw'}>Use column data with LLM model</MenuItem>
                     {/* TODU: Add encryption logic*/}
                     {/* <MenuItem value={'data_encrypt'}>Encrypt column data</MenuItem>
         <MenuItem value={'column_name_encrypt'}>Encrypt column name</MenuItem>
