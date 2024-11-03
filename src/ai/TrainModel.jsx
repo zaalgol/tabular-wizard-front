@@ -179,6 +179,8 @@ function TrainModel() {
                     return { header, type: 'raw' }; // Regular column data
                 } else if (option === 'semantic') {
                     return { header, type: 'semantic' }; // Semantic column data
+                } else if (option === 'datetime') {
+                    return { header, type: 'datetime' }; // datetime column data
                 } else {
                     return null; // Ignore column data
                 }
@@ -198,7 +200,8 @@ function TrainModel() {
                 samplingStrategy: state.samplingStrategy,
                 metric: state.metric,
                 isTimeSeries: state.isTimeSeries, 
-                columnTypes: filteredColumns.map(col => col.type), // Send column type (raw or semantic),
+                columnsType:  Object.fromEntries(filteredColumns.map(item => [item.header, item.type])) // (raw, datetime or semantic),
+                // columnTypes: filteredColumns // (raw, datetime or semantic),
             };
 
             // Send the data to the server
@@ -223,8 +226,9 @@ function TrainModel() {
                     label="Options"
                     onChange={(event) => handleOptionChange(colIndex, event)}
                 >
-                    <MenuItem value={'raw'}>Use column data</MenuItem>
-                    <MenuItem value={'semantic'}>Use semantic column data</MenuItem>
+                    <MenuItem value={'raw'}>Use raw column data</MenuItem>
+                    <MenuItem value={'datetime'}>Datetime column</MenuItem>
+                    <MenuItem value={'semantic'}>semantic column data</MenuItem>
                     {/* TODU: Add encryption logic*/}
                     {/* <MenuItem value={'data_encrypt'}>Encrypt column data</MenuItem>
                     <MenuItem value={'column_name_encrypt'}>Encrypt column name</MenuItem>
