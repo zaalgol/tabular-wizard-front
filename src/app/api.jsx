@@ -17,7 +17,9 @@ const makeRequest = async (url, method, body = null, headers = {}, useToken = tr
       const token = localStorage.getItem('access_token');
       headers['Authorization'] = `Bearer ${token}`;
     }
-    url = `${appConfig.SERVER_ADDRESS}:${appConfig.SERVER_PORT}` + url;
+    // url = `${appConfig.SERVER_ADDRESS}:${appConfig.SERVER_PORT}` + url;
+    url = "http://localhost:8080" + url;
+    
     const config = {
       method,
       url,

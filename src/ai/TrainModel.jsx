@@ -201,7 +201,6 @@ function TrainModel() {
                 metric: state.metric,
                 isTimeSeries: state.isTimeSeries, 
                 columnsType:  Object.fromEntries(filteredColumns.map(item => [item.header, item.type])) // (raw, datetime or semantic),
-                // columnTypes: filteredColumns // (raw, datetime or semantic),
             };
 
             // Send the data to the server

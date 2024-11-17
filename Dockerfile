@@ -1,32 +1,43 @@
-# Use an official Node runtime as a parent image
-FROM node:21
+# Dockerfile for Vite React client
 
-# Set the working directory in the container
-WORKDIR /usr/src/app
+# Stage 1: Build the React app
+FROM node:20-alpine AS build
 
-# Copy only the necessary files
-COPY package.json ./
-COPY index.html ./
-COPY vite.config.js ./
+# Set the working directory
+WORKDIR /app
 
-# Create directories for public and src
-RUN mkdir public src
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
-# Copy the public and src folders
-COPY public ./public
-COPY src ./src
-
-# Install any needed packages specified in package.json
+# Install dependencies
 RUN npm install
 
-# # Copy the rest of your app's source code
-# COPY . .
+# Copy the rest of the application code
+COPY . .
 
-# Make port 5173 available to the world outside this container
-EXPOSE 5173
+# Set build arguments with default values
+ARG SERVER_ADDRESS
+ARG SERVER_PORT
 
-# Define environment variable
-ENV NAME World
+# Ensure the build arguments are passed into config.json correctly
+RUN sed -i "s|\"SERVER_ADDRESS\": \"\"|\"SERVER_ADDRESS\": \"$SERVER_ADDRESS\"|g" src/config/config.json
+RUN sed -i "s|\"SERVER_PORT\": \"\"|\"SERVER_PORT\": \"$SERVER_PORT\"|g" src/config/config.json
 
-# Run the app when the container launches
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+# Build the app for production
+RUN npm run build
+
+# Stage 2: Serve the app with Nginx
+FROM nginx:alpine
+
+# Remove default Nginx index page
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy built files to Nginx directory
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx when the container launches
+CMD ["nginx", "-g", "daemon off;"]

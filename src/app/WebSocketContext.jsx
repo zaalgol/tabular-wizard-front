@@ -19,14 +19,37 @@ export const WebSocketProvider = ({ children }) => {
   const socketRef = useRef(null);
 
   useEffect(() => {
+    // local
     socketRef.current = io(
-      `${appConfig.SERVER_ADDRESS}:${appConfig.SERVER_PORT}`,
-      {
-        transports: ["websocket"],
-        path: "/socket.io",
-        autoConnect: true,
-      }
+      // `${appConfig.SERVER_ADDRESS}:${appConfig.SERVER_PORT}`,
+      // v7
+      // "http://localhost:8080",
+      // {
+      //   transports: ["websocket"],
+      //   path: "/socket.io",
+      //   autoConnect: true,
+      // }
     );
+
+    //v4 
+    socketRef.current = io("http://localhost:8080/ws", {
+      transports: ["websocket"],
+      path: "/ws",
+      autoConnect: true,
+    });
+
+    /// v5
+    // socketRef.current = io("http://localhost:8080/ws", {
+    //   transports: ["websocket"],
+    //   autoConnect: true,
+    // });
+    
+    // socketRef.current = io("http://localhost:8080", {
+    //   transports: ["websocket"],
+    //   path: "/ws",
+    //   autoConnect: true, // Ensure correct casing
+    // });
+    
 
     const socket = socketRef.current;
 
