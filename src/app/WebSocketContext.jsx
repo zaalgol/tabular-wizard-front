@@ -23,20 +23,20 @@ export const WebSocketProvider = ({ children }) => {
     socketRef.current = io(
       // `${appConfig.SERVER_ADDRESS}:${appConfig.SERVER_PORT}`,
       // v7
-      // "http://localhost:8080",
-      // {
-      //   transports: ["websocket"],
-      //   path: "/socket.io",
-      //   autoConnect: true,
-      // }
+      "http://localhost:8080",
+      {
+        transports: ["websocket"],
+        path: "/socket.io",
+        autoConnect: true,
+      }
     );
 
     //v4 
-    socketRef.current = io("http://localhost:8080/ws", {
-      transports: ["websocket"],
-      path: "/ws",
-      autoConnect: true,
-    });
+    // socketRef.current = io("http://localhost:8080/ws", {
+    //   transports: ["websocket"],
+    //   path: "/ws",
+    //   autoConnect: true,
+    // });
 
     /// v5
     // socketRef.current = io("http://localhost:8080/ws", {
