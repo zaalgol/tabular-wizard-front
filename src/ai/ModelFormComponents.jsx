@@ -31,6 +31,8 @@ export const ModelNameInput = ({ value, onChange, readOnly = false }) => (
         value={value}
         onChange={onChange}
         InputProps={{ readOnly }}
+        className={readOnly ? 'read-only-field' : ''}
+
     />
 );
 
@@ -43,6 +45,7 @@ export const DescriptionInput = ({ value, onChange, label = '', readOnly = false
         value={value}
         onChange={onChange}
         InputProps={{ readOnly }}
+        className={readOnly ? 'read-only-field' : ''}
     />
 );
 
@@ -58,6 +61,7 @@ export const TargetColumnSelect = ({ columns, value, onChange, readOnly = false 
             label="Target Column"
             onChange={onChange}
             readOnly={readOnly}
+            className={readOnly ? 'read-only-field' : ''}
         >
             {columns.map((col, index) => (
                 <MenuItem key={index} value={col}>{col}</MenuItem>
@@ -78,6 +82,7 @@ export const MetricSelect = ({ metrics, value, onChange, readOnly = false }) => 
             label="Metric"
             onChange={onChange}
             readOnly={readOnly}
+            className={readOnly ? 'read-only-field' : ''}
         >
             {Object.keys(metrics).map((key) => (
                 <MenuItem key={key} value={key}>{metrics[key]}</MenuItem>
@@ -98,6 +103,7 @@ export const TrainingStrategySelect = ({ trainingStrategies, value, onChange, re
             label="Training Strategy"
             onChange={onChange}
             readOnly={readOnly}
+            className={readOnly ? 'read-only-field' : ''}
         >
             {Object.keys(trainingStrategies).map((key) => (
                 <MenuItem key={key} value={key}>{trainingStrategies[key]}</MenuItem>
@@ -118,6 +124,7 @@ export const SamplingStrategySelect = ({ samplingStrategies, value, onChange, re
             label="Sampling Strategy"
             onChange={onChange}
             readOnly={readOnly}
+            className={readOnly ? 'read-only-field' : ''}
         >
             {Object.keys(samplingStrategies).map((key) => (
                 <MenuItem key={key} value={key}>{samplingStrategies[key]}</MenuItem>

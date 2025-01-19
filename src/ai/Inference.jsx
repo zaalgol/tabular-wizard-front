@@ -139,7 +139,10 @@ const Inference = () => {
                 <TitleView titleText="Inference" IconComponent={InfrenceIcon} />
                 <Grid container spacing={3}>
                     <Grid item xs={2} sx={gridItemStyles}>
-                        <DescriptionInput label="" value={modelName} />
+                        <DescriptionInput label="" 
+                            value={modelName} 
+                            readOnly={true}
+                        />
                     </Grid>
                     <Grid item xs={4} sx={gridItemStyles}>
                         <DescriptionInput
@@ -182,6 +185,7 @@ const Inference = () => {
                         <DescriptionInput
                             label={""}
                             value={state.model.target_column}
+                            readOnly={true}
                         />
                     </Grid>
                     <Grid item xs={12}>
