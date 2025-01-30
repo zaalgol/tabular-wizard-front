@@ -1,9 +1,10 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { TextField, Button, Container, Box, Typography, CssBaseline } from '@mui/material';
 import './Login.css';
 import { handleMakeRequest } from '../app/RequestNavigator';
+
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -66,6 +67,10 @@ function Login() {
           >
             Sign In
           </Button>
+        </Box>
+        <Box sx={{ mt: 2 }}>
+          <Link to="/register">Don&apos;t have an account? Register</Link><br/>
+          <Link to="/forgotPassword">Forgot Password?</Link>
         </Box>
       </Box>
     </Container>
