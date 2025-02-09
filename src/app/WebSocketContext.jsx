@@ -1,14 +1,34 @@
-// src/app/WebSocketContext.jsx
+
+//     //v4 
+//     // socketRef.current = io("http://localhost:8080/ws", {
+//     //   transports: ["websocket"],
+//     //   path: "/ws",
+//     //   autoConnect: true,
+//     // });
+
+//     /// v5
+//     // socketRef.current = io("http://localhost:8080/ws", {
+//     //   transports: ["websocket"],
+//     //   autoConnect: true,
+//     // });
+    
+//     // socketRef.current = io("http://localhost:8080", {
+//     //   transports: ["websocket"],
+//     //   path: "/ws",
+//     //   autoConnect: true, // Ensure correct casing
+//     // });
+    
+
+// // src/app/WebSocketContext.jsx
 
 import React, {
   createContext,
   useContext,
   useEffect,
   useRef,
-  useState,
+  useState
 } from "react";
 import io from "socket.io-client";
-import appConfig from "../config/config.json";
 
 const WebSocketContext = createContext();
 
@@ -16,78 +36,77 @@ export const useWebSocket = () => useContext(WebSocketContext);
 
 export const WebSocketProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
+  const [token, setToken] = useState(localStorage.getItem("access_token"));
   const socketRef = useRef(null);
 
   useEffect(() => {
-    // local
-    socketRef.current = io(
-      // `${appConfig.SERVER_ADDRESS}:${appConfig.SERVER_PORT}`,
-      // v7
-      "http://localhost:8080",
-      {
+    // Whenever `token` changes, tear down the old socket and make a new one
+    if (socketRef.current) {
+      socketRef.current.close();
+      console.log("Closed existing socket");
+    }
+
+    if (token) {
+      console.log("Creating socket for token:", token);
+      socketRef.current = io("http://localhost:8080", {
         transports: ["websocket"],
         path: "/socket.io",
-        autoConnect: true,
-      }
-    );
+        auth: { token }
+      });
 
-    //v4 
-    // socketRef.current = io("http://localhost:8080/ws", {
-    //   transports: ["websocket"],
-    //   path: "/ws",
-    //   autoConnect: true,
-    // });
+      const socket = socketRef.current;
 
-    /// v5
-    // socketRef.current = io("http://localhost:8080/ws", {
-    //   transports: ["websocket"],
-    //   autoConnect: true,
-    // });
-    
-    // socketRef.current = io("http://localhost:8080", {
-    //   transports: ["websocket"],
-    //   path: "/ws",
-    //   autoConnect: true, // Ensure correct casing
-    // });
-    
+      socket.on("connect", () => {
+        console.log("Connected with SID:", socket.id);
+      });
 
-    const socket = socketRef.current;
+      socket.on("connect_error", (err) => {
+        console.error("Connection error:", err);
+      });
 
-    socket.on("connect", () => {
-      console.log("Connected to Socket.IO server");
-    });
+      socket.on("status", (message) => {
+        console.log("Got status:", message);
+        setMessages((prev) => [...prev, message]);
 
-    socket.on("connect_error", (err) => {
-      console.error("Connection error:", err);
-    });
+        if (message.status === "success" && message.file_url) {
+          const downloadLink = document.createElement("a");
+          downloadLink.href = `${message.file_url}?Authorization=${token}&model_name=${message.model_name}&file_type=${message.file_type}`;
+          downloadLink.download = "download_file";
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+        }
+      });
+    } else {
+      // No token => not logged in => no socket
+      console.log("No token found, not creating socket");
+    }
 
-    socket.on("status", (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-      if (message["status"] === "success" && message["file_url"]) {
-        console.log(`message["file_url"]:${message["file_url"]}`);
-        // If the message has a CSV URL, prompt the user to download the file
-        const downloadLink = document.createElement("a");
-        const token = localStorage.getItem("access_token");
-        downloadLink.href = `${message["file_url"]}?Authorization=${token}&model_name=${message["model_name"]}&file_type=${message["file_type"]}`;    
-        console.log(`message["file_url"]:${message["file_url"]}`);
-        console.log(`downloadLink.href:${downloadLink.href}`);
-        downloadLink.download = "download_file";
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-      }
-    });
-
+    // Cleanup whenever the effect is about to re-run or unmount
     return () => {
-      if (socket) {
-        socket.close();
-        console.log("Disconnected from Socket.IO server");
+      if (socketRef.current) {
+        socketRef.current.close();
       }
     };
-  }, []);
+  }, [token]);
+
+  /**
+   * Provide a function that allows us to re-set the token from anywhere
+   * (e.g. on login or logout).
+   */
+  const updateToken = (newToken) => {
+    if (newToken) {
+      localStorage.setItem("access_token", newToken);
+    } else {
+      localStorage.removeItem("access_token");
+    }
+    setToken(newToken);
+  };
 
   return (
-    <WebSocketContext.Provider value={{ messages }}>
+    <WebSocketContext.Provider
+      value={{ messages, token, setToken: updateToken }}
+    >
       {children}
     </WebSocketContext.Provider>
   );

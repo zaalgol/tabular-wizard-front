@@ -12,12 +12,14 @@ import {
 } from '@mui/material';  // <-- Import MUI's Link
 import './Login.css';
 import { handleMakeRequest } from '../app/RequestNavigator';
+import { useWebSocket } from "../app/WebSocketContext";
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { setIsAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate(); 
+  const { setToken } = useWebSocket();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,6 +35,7 @@ function Login() {
       if (response.status === 200) {
         setIsAuthenticated(true);
         localStorage.setItem('access_token', response.data.access_token);
+        setToken(response.data.access_token); // Let our WebSocketContext know about the new token
         navigate('/userModels');
       }
     } catch (error) {
